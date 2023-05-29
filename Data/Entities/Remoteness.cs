@@ -1,8 +1,9 @@
-﻿using JobSearchWebsite.Data.Entities.Base;
+﻿using Data.Entities.Base;
+using JobSearchWebsite.Data.Entities.Base;
 
 namespace JobSearchWebsite.Data.Entities
 {
-    public class Remoteness : BaseNamedEntity
-    {
+    public class Remoteness : BaseFilteringEntity
+	{
     }
 }

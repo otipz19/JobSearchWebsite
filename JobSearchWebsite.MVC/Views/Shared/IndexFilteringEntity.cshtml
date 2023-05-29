@@ -3,12 +3,11 @@
 	<div class="row pt-4">
 		<div class="col-6">
 			<div class="btn-group dropend">
-				<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+				<button type="button" class="btn btn-outline-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 					@ViewData["Title"]
 				</button>
 				<ul class="dropdown-menu">
 					<li><a class="dropdown-item" asp-controller="City">Cities</a></li>
-					<li><a class="dropdown-item" asp-controller="Company">Companies</a></li>
 					<li><a class="dropdown-item" asp-controller="EnglishLevel">English Levels</a></li>
 					<li><a class="dropdown-item" asp-controller="ExperienceLevel">Experience Levels</a></li>
 					<li><a class="dropdown-item" asp-controller="Keyword">Keywords</a></li>
@@ -44,12 +43,12 @@
 		</thead>
 		<tbody>
 			<tr>
-				<partial name="_CreateBaseNamedEntity" model="@null" />
+				<partial name="_CreateFilteringEntity" model="@null" />
 			</tr>
 			@foreach(var keyword in Model)
 			{
 				<tr>
-					<partial name="_UpdateDeleteBaseNamedEntity" model="@keyword" />
+					<partial name="_UpdateDeleteFilteringEntity" model="@keyword" />
 				</tr>
 			}
 		</tbody>

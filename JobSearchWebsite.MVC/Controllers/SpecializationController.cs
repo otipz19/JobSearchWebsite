@@ -5,7 +5,7 @@ using JobSearchWebsite.Data.Entities.Base;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
-	public class SpecializationController : BaseNamedEntityController<Specialization>
+	public class SpecializationController : BaseFilteringEntityController<Specialization>
 	{
 		public SpecializationController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator) : base(dbContext, validator)
 		{

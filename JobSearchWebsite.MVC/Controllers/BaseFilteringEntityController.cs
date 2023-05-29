@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Data.Entities.Base;
+using FluentValidation;
 using JobSearchWebsite.Data;
 using JobSearchWebsite.Data.Entities.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -6,13 +7,13 @@ using Utility.Toaster;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
-	public abstract class BaseNamedEntityController<T> : Controller
-		where T : BaseNamedEntity
+	public abstract class BaseFilteringEntityController<T> : Controller
+		where T : BaseFilteringEntity
 	{
 		private readonly AppDbContext _dbContext;
 		private readonly IValidator<BaseNamedEntity> _validator;
 
-		public BaseNamedEntityController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator)
+		public BaseFilteringEntityController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator)
 		{
 			_dbContext = dbContext;
 			_validator = validator;
@@ -23,7 +24,7 @@ namespace JobSearchWebsite.MVC.Controllers
 		{
 			var entities = _dbContext.Set<T>();
 			ViewData["Title"] = typeof(T).Name;
-			return View(viewName: "IndexBaseNamedEntity", model: entities);
+			return View(viewName: "IndexFilteringEntity", model: entities);
 		}
 
 		[HttpPost]

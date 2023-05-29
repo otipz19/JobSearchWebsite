@@ -1,9 +1,8 @@
-﻿using JobSearchWebsite.Data.Entities;
-using JobSearchWebsite.Data.Entities.Base;
+﻿using Data.Entities.Base;
 
 namespace JobSearchWebsite.Data.Entities
 {
-    public class City : BaseNamedEntity
+    public class City : BaseFilteringEntity
     {
         public virtual List<Vacancie> Vacancies { get; set; } = new();
 

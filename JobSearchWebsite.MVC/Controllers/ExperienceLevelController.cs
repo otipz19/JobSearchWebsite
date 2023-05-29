@@ -5,7 +5,7 @@ using JobSearchWebsite.Data.Entities.Base;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
-	public class ExperienceLevelController : BaseNamedEntityController<ExperienceLevel>
+	public class ExperienceLevelController : BaseFilteringEntityController<ExperienceLevel>
 	{
 		public ExperienceLevelController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator) : base(dbContext, validator)
 		{
