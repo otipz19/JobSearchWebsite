@@ -1,8 +1,8 @@
-﻿using JobSearchWebsite.Data.Entities;
+﻿using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-namespace JobSearchWebsite.Data
+namespace Data
 {
     public class AppDbContext : DbContext
     {
@@ -11,9 +11,13 @@ namespace JobSearchWebsite.Data
 
         }
 
+        public DbSet<Jobseeker> Jobseekers { get; set; }
+		public DbSet<Company> Companies { get; set; }
+
+		public DbSet<Resume> Resumes { get; set; }
         public DbSet<Vacancie> Vacancies { get; set; }
+
         public DbSet<City> Cities { get; set; }
-        public DbSet<Company> Companies { get; set; }
         public DbSet<EnglishLevel> EnglishLevels { get; set; }
         public DbSet<ExperienceLevel> ExperienceLevels { get; set; }
         public DbSet<Keyword> Keywords { get; set; }

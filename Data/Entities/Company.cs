@@ -1,9 +1,9 @@
-﻿using JobSearchWebsite.Data.Entities.Base;
+﻿using Data.Entities.Base;
 
-namespace JobSearchWebsite.Data.Entities
+namespace Data.Entities
 {
-    public class Company : BaseNamedEntity
+    public class Company : BaseProfileEntity
     {
-        public string ImagePath { get; set; }
+        public virtual List<Vacancie> Vacancies { get; set; }
     }
 }

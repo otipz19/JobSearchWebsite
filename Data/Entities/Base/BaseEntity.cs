@@ -1,4 +1,4 @@
-﻿namespace JobSearchWebsite.Data.Entities.Base
+﻿namespace Data.Entities.Base
 {
     public abstract class BaseEntity
     {

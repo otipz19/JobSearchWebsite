@@ -1,6 +1,6 @@
-﻿using JobSearchWebsite.Data.Entities;
+﻿using Data.Entities;
 
-namespace JobSearchWebsite.Data.EntitiesConfiguration
+namespace Data.EntitiesConfiguration
 {
     internal class EnglishLevelConfiguration : BaseEntityConfiguration<EnglishLevel>
     {

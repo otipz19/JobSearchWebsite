@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using JobSearchWebsite.Data;
-using JobSearchWebsite.Data.Entities;
-using JobSearchWebsite.Data.Entities.Base;
+using Data;
+using Data.Entities;
+using Data.Entities.Base;
 
 namespace JobSearchWebsite.MVC.Controllers
 {

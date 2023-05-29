@@ -1,7 +1,6 @@
 ﻿using Data.Entities.Base;
 using FluentValidation;
-using JobSearchWebsite.Data;
-using JobSearchWebsite.Data.Entities.Base;
+using Data;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Toaster;
 

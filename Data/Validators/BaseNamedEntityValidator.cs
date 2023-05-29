@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using JobSearchWebsite.Data.Entities.Base;
+using Data.Entities.Base;
 
 namespace Data.Validators
 {

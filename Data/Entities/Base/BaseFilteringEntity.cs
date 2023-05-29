@@ -1,8 +1,8 @@
-﻿using JobSearchWebsite.Data.Entities.Base;
+﻿using Data.Entities.Base;
 
 namespace Data.Entities.Base
 {
-	public class BaseFilteringEntity : BaseNamedEntity
+	public abstract class BaseFilteringEntity : BaseNamedEntity
 	{
 	}
 }

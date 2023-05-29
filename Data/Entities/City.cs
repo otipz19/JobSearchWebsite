@@ -1,6 +1,6 @@
 ﻿using Data.Entities.Base;
 
-namespace JobSearchWebsite.Data.Entities
+namespace Data.Entities
 {
     public class City : BaseFilteringEntity
     {

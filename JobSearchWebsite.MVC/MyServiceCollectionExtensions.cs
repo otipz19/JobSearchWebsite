@@ -1,7 +1,7 @@
 ﻿using Data.Validators;
 using FluentValidation;
-using JobSearchWebsite.Data;
-using JobSearchWebsite.Data.Entities.Base;
+using Data;
+using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobSearchWebsite.MVC

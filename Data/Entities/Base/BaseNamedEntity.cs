@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JobSearchWebsite.Data.Entities.Base
+namespace Data.Entities.Base
 {
     public abstract class BaseNamedEntity : BaseEntity
     {

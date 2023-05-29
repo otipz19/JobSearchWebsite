@@ -1,8 +1,8 @@
-﻿using JobSearchWebsite.Data.Entities.Base;
+﻿using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace JobSearchWebsite.Data.EntitiesConfiguration
+namespace Data.EntitiesConfiguration
 {
     internal class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T>
         where T : BaseEntity
