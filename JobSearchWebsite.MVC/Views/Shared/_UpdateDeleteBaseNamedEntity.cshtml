@@ -1,0 +1,22 @@
+﻿@model JobSearchWebsite.Data.Entities.Base.BaseNamedEntity
+<form method="post">
+	<td width="10%">@Model.Id</td>
+	<td width="30%">
+		<input asp-for="Name" class="form-control" />
+	</td>
+	<td width="30%">
+		@Model.CreatedAt
+	</td>
+	<td width="30%">
+		<div class="text-center">
+			<div class="btn-group w-75">
+				<button type="submit" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-outline-primary mx-2">
+					<i class="fa-solid fa-pen-to-square"></i> Update
+				</button>
+				<button type="submit" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger mx-2">
+					<i class="fa-solid fa-trash"></i> Delete
+				</button>
+			</div>
+		</div>
+	</td>
+</form>

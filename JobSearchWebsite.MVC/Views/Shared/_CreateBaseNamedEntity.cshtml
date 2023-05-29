@@ -1,0 +1,13 @@
+﻿@model JobSearchWebsite.Data.Entities.Base.BaseNamedEntity
+<form method="post" asp-action="Create">
+	<td width="10%"></td>
+	<td width ="30%">
+		<input asp-for="Name" class="form-control" />
+	</td>
+	<td width="30%"></td>
+	<td width="30%">
+		<div class="text-center"> 
+			<button type="submit" class="btn btn-outline-primary w-75"><i class="fa-solid fa-plus"></i> Create</button>
+		</div>
+	</td>
+</form>

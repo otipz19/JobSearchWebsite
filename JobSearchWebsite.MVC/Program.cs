@@ -7,9 +7,11 @@ namespace JobSearchWebsite.MVC
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation();
 
-            builder.Services.AddAppDbContext(builder.Configuration);
+            builder.Services.AddAppDbContext(builder.Configuration)
+				.AddFluentValidators();
 
             var app = builder.Build();
 

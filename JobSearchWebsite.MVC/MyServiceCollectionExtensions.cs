@@ -1,4 +1,7 @@
-﻿using JobSearchWebsite.Data;
+﻿using Data.Validators;
+using FluentValidation;
+using JobSearchWebsite.Data;
+using JobSearchWebsite.Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobSearchWebsite.MVC
@@ -11,6 +14,11 @@ namespace JobSearchWebsite.MVC
             {
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("Localhost"));
             });
+        }
+
+        public static IServiceCollection AddFluentValidators(this IServiceCollection services)
+        {
+            return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>();
         }
     }
 }

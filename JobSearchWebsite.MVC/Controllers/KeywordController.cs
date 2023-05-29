@@ -1,21 +1,16 @@
-﻿using JobSearchWebsite.Data;
+﻿using FluentValidation;
+using JobSearchWebsite.Data;
+using JobSearchWebsite.Data.Entities;
+using JobSearchWebsite.Data.Entities.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
-    public class KeywordController : Controller
-    {
-        private readonly AppDbContext _dbContext;
-
-        public KeywordController(AppDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        public IActionResult Index()
-        {
-            var keywords = _dbContext.Keywords;
-            return View(keywords);
-        }
-    }
+	public class KeywordController : BaseNamedEntityController<Keyword>
+	{
+		public KeywordController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator) 
+			: base(dbContext, validator)
+		{
+		}
+	}
 }

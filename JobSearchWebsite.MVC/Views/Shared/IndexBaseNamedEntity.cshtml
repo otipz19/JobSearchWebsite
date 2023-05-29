@@ -1,0 +1,59 @@
+﻿@model IEnumerable<JobSearchWebsite.Data.Entities.Base.BaseNamedEntity>
+<div class="container p-3 bg-white">
+	<div class="row pt-4">
+		<div class="col-6">
+			<div class="btn-group dropend">
+				<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+					@ViewData["Title"]
+				</button>
+				<ul class="dropdown-menu">
+					<li><a class="dropdown-item" asp-controller="City">Cities</a></li>
+					<li><a class="dropdown-item" asp-controller="Company">Companies</a></li>
+					<li><a class="dropdown-item" asp-controller="EnglishLevel">English Levels</a></li>
+					<li><a class="dropdown-item" asp-controller="ExperienceLevel">Experience Levels</a></li>
+					<li><a class="dropdown-item" asp-controller="Keyword">Keywords</a></li>
+					<li><a class="dropdown-item" asp-controller="Remoteness">Remotenesses</a></li>
+					<li><a class="dropdown-item" asp-controller="Specialization">Specializations</a></li>
+					<li><a class="dropdown-item" asp-controller="Sphere">Spheres</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-6 text-end">
+			<h2 class="text-primary">@ViewData["Title"] List</h2>
+		</div>
+	</div>
+
+	<br /><br />
+
+	<table class="table table-bordered table-striped" style="width:100%">
+		<thead>
+			<tr>
+				<th>
+					Id
+				</th>
+				<th>
+					Name
+				</th>
+				<th>
+					Created at
+				</th>
+				<th>
+						
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<partial name="_CreateBaseNamedEntity" model="@null" />
+			</tr>
+			@foreach(var keyword in Model)
+			{
+				<tr>
+					<partial name="_UpdateDeleteBaseNamedEntity" model="@keyword" />
+				</tr>
+			}
+		</tbody>
+	</table>
+
+</div>
+
