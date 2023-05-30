@@ -3,6 +3,7 @@ using FluentValidation;
 using Data;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Toaster;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -19,9 +20,9 @@ namespace JobSearchWebsite.MVC.Controllers
 		}
 
 		[HttpGet]
-		public virtual IActionResult Index()
+		public virtual async Task<IActionResult> Index()
 		{
-			var entities = _dbContext.Set<T>();
+			var entities = await _dbContext.Set<T>().ToListAsync();
 			ViewData["Title"] = typeof(T).Name;
 			return View(viewName: "IndexFilteringEntity", model: entities);
 		}
@@ -33,11 +34,12 @@ namespace JobSearchWebsite.MVC.Controllers
 			var validation = await _validator.ValidateAsync(entity);
 			if (!validation.IsValid)
 			{
-				TempData.Toaster().Error(validation.Errors.First().ErrorMessage);
+				TempData.Toaster().Error(validation.Errors.First().ErrorMessage, "Invalid input");
 				return RedirectToAction(nameof(Index));
 			}
 			_dbContext.Set<T>().Add(entity);
 			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success($"{typeof(T).Name} created successfully");
 			return RedirectToAction(nameof(Index));
 		}
 
@@ -48,17 +50,19 @@ namespace JobSearchWebsite.MVC.Controllers
 			var validation = await _validator.ValidateAsync(entity);
 			if (!validation.IsValid)
 			{
-				TempData.Toaster().Error(validation.Errors.First().ErrorMessage);
+				TempData.Toaster().Error(validation.Errors.First().ErrorMessage, "Invalid input");
 				return RedirectToAction(nameof(Index));
 			}
 			T toUpdate = await _dbContext.Set<T>().FindAsync(entity.Id);
 			if (toUpdate == null)
 			{
+				TempData.Toaster().Error($"{typeof(T).Name} you're trying to update no longer exists", "Not found");
 				return RedirectToAction(nameof(Index));
 			}
 			toUpdate.Name = entity.Name;
 			_dbContext.Set<T>().Update(toUpdate);
 			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success($"{typeof(T).Name} updated successfully");
 			return RedirectToAction(nameof(Index));
 		}
 
@@ -69,10 +73,12 @@ namespace JobSearchWebsite.MVC.Controllers
 			T toDelete = await _dbContext.Set<T>().FindAsync(entity.Id);
 			if (toDelete == null)
 			{
+				TempData.Toaster().Error($"{typeof(T).Name} you're trying to delete no longer exists", "Not found");
 				return RedirectToAction(nameof(Index));
 			}
 			_dbContext.Set<T>().Remove(toDelete);
 			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success($"{typeof(T).Name} deleted successfully");
 			return RedirectToAction(nameof(Index));
 		}
 	}

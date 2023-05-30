@@ -3,6 +3,7 @@ using FluentValidation;
 using Data;
 using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace JobSearchWebsite.MVC
 {
@@ -20,5 +21,13 @@ namespace JobSearchWebsite.MVC
         {
             return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>();
         }
+
+        public static IServiceCollection AddIdentity(this IServiceCollection services)
+        {
+			return services.AddIdentity<IdentityUser, IdentityRole>()
+				.AddDefaultTokenProviders()
+				.AddDefaultUI()
+				.AddEntityFrameworkStores<AppDbContext>().Services;
+		}
     }
 }

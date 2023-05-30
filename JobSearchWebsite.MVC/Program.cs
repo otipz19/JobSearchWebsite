@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Data;
 namespace JobSearchWebsite.MVC
 {
     public class Program
@@ -11,7 +14,8 @@ namespace JobSearchWebsite.MVC
                 .AddRazorRuntimeCompilation();
 
             builder.Services.AddAppDbContext(builder.Configuration)
-				.AddFluentValidators();
+				.AddFluentValidators()
+                .AddIdentity();
 
             var app = builder.Build();
 
@@ -28,6 +32,7 @@ namespace JobSearchWebsite.MVC
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
