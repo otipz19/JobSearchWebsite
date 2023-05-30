@@ -1,9 +1,9 @@
 ﻿namespace JobSearchWebsite.MVC.Enums
 {
-	public enum AppUserRoleType
-	{
-		Admin,
-		Company,
-		Jobseeker,
-	}
+    public enum AppUserRoleType
+    {
+        Admin,
+        Jobseeker,
+        Company,
+    }
 }

@@ -1,7 +1,17 @@
 ﻿@page
+@using JobSearchWebsite.MVC.Enums;
+@using JobSearchWebsite.MVC.ViewModels;
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+
+    var availableRoles = new[] { AppUserRoleType.Jobseeker, AppUserRoleType.Company }
+        .Select(t => new RoleVM()
+                {
+                    Value = (int)t,
+                    Text = t.ToString(),
+                })
+        .ToList();
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -26,6 +36,17 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.SelectedRole">You are?..</label>
+                @foreach(var role in availableRoles)
+                {
+                    <div class="form-check">
+                        <input asp-for="Input.SelectedRole" type="radio" class="form-check-input" aria-required="true" value="@role.Value" />
+                        <label class="form-check-label">@role.Text</label>
+                    </div>
+                }
+                <span asp-validation-for="Input.SelectedRole" class="text-danger"></span>
             </div>
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>

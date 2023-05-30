@@ -15,7 +15,8 @@ namespace JobSearchWebsite.MVC
 
             builder.Services.AddAppDbContext(builder.Configuration)
 				.AddFluentValidators()
-                .AddIdentity();
+                .AddIdentity()
+                .AddAuthorizationRoles();
 
             var app = builder.Build();
 
@@ -35,6 +36,7 @@ namespace JobSearchWebsite.MVC
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapRazorPages();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

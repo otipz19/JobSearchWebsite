@@ -4,6 +4,8 @@ using Data;
 using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Utility.Utilities;
+using JobSearchWebsite.MVC.Enums;
 
 namespace JobSearchWebsite.MVC
 {
@@ -29,5 +31,15 @@ namespace JobSearchWebsite.MVC
 				.AddDefaultUI()
 				.AddEntityFrameworkStores<AppDbContext>().Services;
 		}
+
+        public static IServiceCollection AddAuthorizationRoles(this IServiceCollection services)
+        {
+            return services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Constants.AdminPolicy, policy => policy.RequireRole(AppUserRoleType.Admin.ToString()));
+                options.AddPolicy(Constants.JobseekerPolicy, policy => policy.RequireRole(AppUserRoleType.Jobseeker.ToString()));
+                options.AddPolicy(Constants.CompanyPolicy, policy => policy.RequireRole(AppUserRoleType.Company.ToString()));
+            });
+        }
     }
 }

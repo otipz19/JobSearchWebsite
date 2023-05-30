@@ -4,9 +4,12 @@ using Data;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Toaster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Utility.Utilities;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
+	[Authorize(Policy = Constants.AdminPolicy)]
 	public abstract class BaseFilteringEntityController<T> : Controller
 		where T : BaseFilteringEntity
 	{
