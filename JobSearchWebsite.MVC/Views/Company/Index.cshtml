@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Data.Entities.Company>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    <h3 class="display-3">Companies List</h3>
+    <div class="list-group">
+        @foreach(var company in Model)
+        {
+            <a asp-action="Details" asp-route-id="@company.Id" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-start">
+                    <img class="rounded-5" style="width:100px; height: auto;" src="@company.ImagePath">
+                    <h5 class="mb-1">@company.Name</h5>
+                    <small>3 days ago</small>
+                </div>
+                <p class="mb-1">Some placeholder content in a paragraph.</p>
+                <small class="text-muted">And some small print.</small>
+            </a>
+        }
+    </div>
+</div>
+

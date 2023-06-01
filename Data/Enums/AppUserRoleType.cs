@@ -1,4 +1,4 @@
-﻿namespace JobSearchWebsite.MVC.Enums
+﻿namespace Data.Enums
 {
     public enum AppUserRoleType
     {

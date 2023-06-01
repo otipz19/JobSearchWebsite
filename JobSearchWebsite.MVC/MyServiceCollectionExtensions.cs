@@ -5,7 +5,11 @@ using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Utility.Utilities;
-using JobSearchWebsite.MVC.Enums;
+using Data.Enums;
+using Utility.Interfaces.Profile;
+using Utility.Services.Profile;
+using Utility.Interfaces.Image;
+using Utility.Services.Image;
 
 namespace JobSearchWebsite.MVC
 {
@@ -21,7 +25,9 @@ namespace JobSearchWebsite.MVC
 
         public static IServiceCollection AddFluentValidators(this IServiceCollection services)
         {
-            return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>();
+            return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>()
+                .AddScoped<IValidator<BaseFiltereableEntity>, BaseFiltereableEntityValidator>()
+                .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>();
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)
@@ -40,6 +46,14 @@ namespace JobSearchWebsite.MVC
                 options.AddPolicy(Constants.JobseekerPolicy, policy => policy.RequireRole(AppUserRoleType.Jobseeker.ToString()));
                 options.AddPolicy(Constants.CompanyPolicy, policy => policy.RequireRole(AppUserRoleType.Company.ToString()));
             });
+        }
+
+        public static IServiceCollection AddMyServices(this IServiceCollection services)
+        {
+            return services.AddScoped<IJobseekerProfileService, JobseekerProfileService>()
+                .AddScoped<ICompanyProfileService, CompanyProfileService>()
+                .AddScoped<ICompanyImageService, CompanyImageService>()
+                .AddScoped<IJobseekerImageService, JobseekerImageService>();
         }
     }
 }

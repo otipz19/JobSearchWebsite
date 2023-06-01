@@ -10,8 +10,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Data;
 using Data.Entities;
-using JobSearchWebsite.MVC.Enums;
+using Data.Enums;
 using JobSearchWebsite.MVC.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -21,10 +22,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Utility.Interfaces.Profile;
 
 namespace JobSearchWebsite.MVC.Areas.Identity.Pages.Account
 {
-	public class RegisterModel : PageModel
+    public class RegisterModel : PageModel
 	{
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly UserManager<IdentityUser> _userManager;
@@ -33,29 +35,36 @@ namespace JobSearchWebsite.MVC.Areas.Identity.Pages.Account
 		private readonly ILogger<RegisterModel> _logger;
 		private readonly IEmailSender _emailSender;
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly ICompanyProfileService _companyProfileService;
+        private readonly IJobseekerProfileService _jobseekerProfileService;
 
-		public RegisterModel(
-			UserManager<IdentityUser> userManager,
-			IUserStore<IdentityUser> userStore,
-			SignInManager<IdentityUser> signInManager,
-			ILogger<RegisterModel> logger,
-			IEmailSender emailSender,
-			RoleManager<IdentityRole> roleManager)
-		{
-			_userManager = userManager;
-			_userStore = userStore;
-			_emailStore = GetEmailStore();
-			_signInManager = signInManager;
-			_logger = logger;
-			_emailSender = emailSender;
-			_roleManager = roleManager;
-		}
+        public RegisterModel(
+            UserManager<IdentityUser> userManager,
+            IUserStore<IdentityUser> userStore,
+            SignInManager<IdentityUser> signInManager,
+            ILogger<RegisterModel> logger,
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager,
+            AppDbContext dbContext,
+            ICompanyProfileService companyProfileService,
+            IJobseekerProfileService jobseekerProfileService)
+        {
+            _userManager = userManager;
+            _userStore = userStore;
+            _emailStore = GetEmailStore();
+            _signInManager = signInManager;
+            _logger = logger;
+            _emailSender = emailSender;
+            _roleManager = roleManager;
+            _companyProfileService = companyProfileService;
+            _jobseekerProfileService = jobseekerProfileService;
+        }
 
-		/// <summary>
-		///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-		///     directly from your code. This API may change or be removed in future releases.
-		/// </summary>
-		[BindProperty]
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        [BindProperty]
 		public InputModel Input { get; set; }
 
 		/// <summary>
@@ -147,7 +156,16 @@ namespace JobSearchWebsite.MVC.Areas.Identity.Pages.Account
 					{
 						return Page();
 					}
-
+					//Create profile for role
+					switch ((AppUserRoleType)Input.SelectedRole)
+					{
+						case AppUserRoleType.Jobseeker:
+							await _jobseekerProfileService.CreateProfile(user);
+                            break;
+						case AppUserRoleType.Company:
+                            await _companyProfileService.CreateProfile(user);
+                            break;
+					}
 
                     var userId = await _userManager.GetUserIdAsync(user);
 					var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

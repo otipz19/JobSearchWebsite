@@ -13,7 +13,9 @@ namespace JobSearchWebsite.MVC.Controllers
 	public abstract class BaseFilteringEntityController<T> : Controller
 		where T : BaseFilteringEntity
 	{
-		private readonly AppDbContext _dbContext;
+        private readonly string _typeName = typeof(T).Name;
+
+        private readonly AppDbContext _dbContext;
 		private readonly IValidator<BaseNamedEntity> _validator;
 
 		public BaseFilteringEntityController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator)
@@ -25,8 +27,8 @@ namespace JobSearchWebsite.MVC.Controllers
 		[HttpGet]
 		public virtual async Task<IActionResult> Index()
 		{
-			var entities = await _dbContext.Set<T>().ToListAsync();
-			ViewData["Title"] = typeof(T).Name;
+			var entities = await _dbContext.Set<T>().AsNoTracking().ToListAsync();
+			ViewData["Title"] = _typeName;
 			return View(viewName: "IndexFilteringEntity", model: entities);
 		}
 
@@ -42,7 +44,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			}
 			_dbContext.Set<T>().Add(entity);
 			await _dbContext.SaveChangesAsync();
-			TempData.Toaster().Success($"{typeof(T).Name} created successfully");
+			TempData.Toaster().Success($"{_typeName} created successfully");
 			return RedirectToAction(nameof(Index));
 		}
 
@@ -59,13 +61,13 @@ namespace JobSearchWebsite.MVC.Controllers
 			T toUpdate = await _dbContext.Set<T>().FindAsync(entity.Id);
 			if (toUpdate == null)
 			{
-				TempData.Toaster().Error($"{typeof(T).Name} you're trying to update no longer exists", "Not found");
+				TempData.Toaster().Error($"{_typeName} you're trying to update no longer exists", "Not found");
 				return RedirectToAction(nameof(Index));
 			}
 			toUpdate.Name = entity.Name;
 			_dbContext.Set<T>().Update(toUpdate);
 			await _dbContext.SaveChangesAsync();
-			TempData.Toaster().Success($"{typeof(T).Name} updated successfully");
+			TempData.Toaster().Success($"{_typeName} updated successfully");
 			return RedirectToAction(nameof(Index));
 		}
 
@@ -76,12 +78,12 @@ namespace JobSearchWebsite.MVC.Controllers
 			T toDelete = await _dbContext.Set<T>().FindAsync(entity.Id);
 			if (toDelete == null)
 			{
-				TempData.Toaster().Error($"{typeof(T).Name} you're trying to delete no longer exists", "Not found");
+				TempData.Toaster().Error($"{_typeName} you're trying to delete no longer exists", "Not found");
 				return RedirectToAction(nameof(Index));
 			}
 			_dbContext.Set<T>().Remove(toDelete);
 			await _dbContext.SaveChangesAsync();
-			TempData.Toaster().Success($"{typeof(T).Name} deleted successfully");
+			TempData.Toaster().Success($"{_typeName} deleted successfully");
 			return RedirectToAction(nameof(Index));
 		}
 	}

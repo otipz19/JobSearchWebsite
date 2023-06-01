@@ -12,14 +12,6 @@ namespace Data.Validators
 				.Length(5, 100);
 			RuleFor(e => e.About)
 				.MaximumLength(2000);
-			RuleFor(e => e.Email)
-				.EmailAddress();
-			RuleFor(e => e.Phone)
-				.Must(phone =>
-				{
-					return int.TryParse(phone, out _);
-				})
-				.WithMessage("Incorrect phone number");
 		}
 	}
 }

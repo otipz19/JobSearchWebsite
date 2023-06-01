@@ -1,0 +1,40 @@
+﻿@model Data.Entities.Company
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="container">
+    <h3 class="display-3">Edit your profile</h3>
+    <div class="row">
+        <div class="col-6">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="About" class="form-label"></label>
+                    <textarea asp-for="About" class="form-control"></textarea>
+                    <span asp-validation-for="About" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label">Image</label>
+                    <input type="file" accept="image/png, image/gif, image/jpeg, image/wbep" name="files" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-outline-success form-control">
+                        Save changes
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-6">
+            <img class="img-fluid" src="@Model.ImagePath" />
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial"></partial>
+}
