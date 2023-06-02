@@ -9,16 +9,16 @@ using Utility.Interfaces.Image;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
-    public class CompanyController : BaseProfileEntityController<Company>
+    public class JobseekerController : BaseProfileEntityController<Jobseeker>
     {
-        public CompanyController(AppDbContext dbContext,
+        public JobseekerController(AppDbContext dbContext,
             IValidator<BaseProfileEntity> validator,
             ICompanyImageService companyImageService) : base(dbContext, validator, companyImageService)
         {
         }
 
         [HttpGet]
-        [Authorize(Policy = Constants.CompanyPolicy)]
+        [Authorize(Policy = Constants.JobseekerPolicy)]
         public new Task<IActionResult> Edit()
         {
             return base.Edit();
@@ -26,8 +26,8 @@ namespace JobSearchWebsite.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = Constants.CompanyPolicy)]
-        public new Task<IActionResult> Edit(Company profile)
+        [Authorize(Policy = Constants.JobseekerPolicy)]
+        public new Task<IActionResult> Edit(Jobseeker profile)
         {
             return base.Edit(profile);
         }

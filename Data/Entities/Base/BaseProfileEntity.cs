@@ -12,18 +12,18 @@ namespace Data.Entities.Base
 
         public string ImagePath { get; set; }
 
+		[DataType(DataType.MultilineText)]
 		public string About { get; set; }
 
-		public BaseProfileEntity Update(BaseProfileEntity entity)
+		public BaseProfileEntity Update(BaseProfileEntity source)
 		{
-			if (entity == null)
+			if (source == null)
 				throw new ArgumentNullException();
-			if(!entity.Name.IsNullOrEmpty())
-                this.Name = entity.Name;
-            if (!entity.About.IsNullOrEmpty())
-                this.About = entity.About;
-            if (!entity.ImagePath.IsNullOrEmpty())
-                this.ImagePath = entity.ImagePath;
+			base.Update(source);
+            if (!source.About.IsNullOrEmpty())
+                this.About = source.About;
+            if (!source.ImagePath.IsNullOrEmpty())
+                this.ImagePath = source.ImagePath;
 			return this;
 		}
 	}

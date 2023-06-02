@@ -18,7 +18,7 @@ namespace JobSearchWebsite.MVC.Controllers
         private readonly AppDbContext _dbContext;
 		private readonly IValidator<BaseNamedEntity> _validator;
 
-		public BaseFilteringEntityController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator)
+		protected BaseFilteringEntityController(AppDbContext dbContext, IValidator<BaseNamedEntity> validator)
 		{
 			_dbContext = dbContext;
 			_validator = validator;

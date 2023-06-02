@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities.Base
 {
@@ -6,5 +7,14 @@ namespace Data.Entities.Base
     {
         [Required]
         public string Name { get; set; }
+
+        public BaseNamedEntity Update(BaseNamedEntity source)
+        {
+            if (source == null)
+                throw new ArgumentNullException();
+            if (!source.Name.IsNullOrEmpty())
+                this.Name = source.Name;
+            return this;
+        }
     }
 }

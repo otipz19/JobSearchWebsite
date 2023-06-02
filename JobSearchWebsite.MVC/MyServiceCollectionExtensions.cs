@@ -10,6 +10,7 @@ using Utility.Interfaces.Profile;
 using Utility.Services.Profile;
 using Utility.Interfaces.Image;
 using Utility.Services.Image;
+using Data.Entities;
 
 namespace JobSearchWebsite.MVC
 {
@@ -26,8 +27,8 @@ namespace JobSearchWebsite.MVC
         public static IServiceCollection AddFluentValidators(this IServiceCollection services)
         {
             return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>()
-                .AddScoped<IValidator<BaseFiltereableEntity>, BaseFiltereableEntityValidator>()
-                .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>();
+                .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>()
+                .AddScoped<IValidator<Vacancie>, VacancieValidator>();
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)

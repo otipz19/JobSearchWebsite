@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Utility.Toaster
 {
@@ -31,6 +32,11 @@ namespace Utility.Toaster
         public void Error(string message, string title = "Error")
         {
             SetToast(ToastType.error, title, message);
+        }
+
+        public void ValidationFailed(ValidationResult validationResult)
+        {
+            Error(validationResult.Errors.FirstOrDefault()?.ErrorMessage, "Invalid input");
         }
 
         private void SetToast(ToastType type, string title, string message)
