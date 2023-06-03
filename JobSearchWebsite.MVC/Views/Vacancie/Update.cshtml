@@ -1,0 +1,158 @@
+﻿@using Data.Entities;
+@model JobSearchWebsite.MVC.ViewModels.VacancieVM
+@{
+	ViewData["Title"] = "Update";
+}
+
+<div class="container">
+	<div class="row mb-3">
+		<div class="">
+			<h3 class="display-3">Edit @Model.Name vacancie</h3>
+		</div>
+		<hr />
+	</div>
+	<form asp-action="Update" method="post" class="row gx-5">
+		<div class="col-sm-8">
+			<div class="row mb-3">
+				<label asp-for="Name" class="col-sm-2 col-form-label">Title of vacancie</label>
+				<div class="col-sm-10">
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="Description" class="col-sm-2 col-form-label"></label>
+				<div class="col-sm-10">
+					<textarea asp-for="Description" class="form-control"></textarea>
+					<span asp-validation-for="Description" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Salary fork</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span class="input-group-text">From</span>
+						<input type="number" asp-for="LeftSalaryFork" class="form-control" />
+						<span class="input-group-text">To</span>
+						<input type="number" asp-for="RightSalaryFork" class="form-control" />
+					</div>
+					<span asp-validation-for="LeftSalaryFork" class="text-danger"></span>
+					<span asp-validation-for="RightSalaryFork" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<label asp-for="SphereId" class="col-sm-2 col-form-label">Sphere</label>
+				<div class="col-sm-10">
+					<select asp-for="SphereId" class="form-select">
+						<option selected disabled value="">--Select a sphere--</option>
+						@foreach (Sphere sphere in Model.AvailableSpheres)
+						{
+							<option value="@sphere.Id">@sphere.Name</option>
+						}
+					</select>
+					<span asp-validation-for="SphereId" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="row mb-3">
+				<label asp-for="SpecializationId" class="col-sm-2 col-form-label">Specialization</label>
+				<div class="col-sm-10">
+					<select asp-for="SpecializationId" class="form-select">
+						<option selected disabled value="">--Select a specialization--</option>
+						@foreach (Specialization specialization in Model.AvailableSpecializations)
+						{
+							<option value="@specialization.Id">@specialization.Name</option>
+						}
+					</select>
+					<span asp-validation-for="SpecializationId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="ExperienceLevelId" class="col-sm-2 col-form-label">Experience level</label>
+				<div class="col-sm-10">
+					<select asp-for="ExperienceLevelId" class="form-select">
+						<option selected disabled value="">--Select an experience level--</option>
+						@foreach (ExperienceLevel experienceLevel in Model.AvailableExperienceLevels)
+						{
+							<option value="@experienceLevel.Id">@experienceLevel.Name</option>
+						}
+					</select>
+					<span asp-validation-for="ExperienceLevelId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="EnglishLevelId" class="col-sm-2 col-form-label">English level</label>
+				<div class="col-sm-10">
+					<select asp-for="EnglishLevelId" class="form-select">
+						<option selected disabled value="">--Select an english level--</option>
+						@foreach (EnglishLevel englishLevel in Model.AvailableEnglishLevels)
+						{
+							<option value="@englishLevel.Id">@englishLevel.Name</option>
+						}
+					</select>
+					<span asp-validation-for="EnglishLevelId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="RemotenessId" class="col-sm-2 col-form-label">Remoteness</label>
+				<div class="col-sm-10">
+					<select asp-for="RemotenessId" class="form-select">
+						<option selected disabled value="">--Select a remoteness--</option>
+						@foreach (Remoteness remoteness in Model.AvailableRemotenesses)
+						{
+							<option value="@remoteness.Id">@remoteness.Name</option>
+						}
+					</select>
+					<span asp-validation-for="RemotenessId" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-sm-3">
+			<div class="row mb-3">
+				<p class="lead">Keywords</p>
+				@foreach(CheckboxOption keyword in Model.CheckboxKeywords)
+				{
+					<div class="form-check col-auto">
+						<input type="checkbox" value="@keyword.Value" name="@(nameof(Model.SelectedKeywords))" id="@keyword.Value" checked="@keyword.IsChecked" class="form-check-input" />
+						<label for="CheckboxKeywords" class="form-check-label">@keyword.Text</label>
+					</div>
+				}
+			</div>
+			<div class="row mb-3">
+				<p class="lead">States</p>
+				@foreach (CheckboxOption state in Model.CheckboxStates)
+				{
+					<div class="form-check col-auto">
+						<input type="checkbox" value="@state.Value" name="@(nameof(Model.SelectedStates))" id="@state.Value" checked="@state.IsChecked" class="form-check-input" />
+						<label for="CheckboxStates" class="form-check-label">@state.Text</label>
+					</div>
+				}
+			</div>
+			<div class="row mb-3">
+				<p class="lead">Cities</p>
+				@foreach (CheckboxOption city in Model.CheckboxCities)
+				{
+					<div class="form-check col-auto">
+						<input type="checkbox" value="@city.Value" name="@(nameof(Model.SelectedCities))" id="@city.Value" checked="@city.IsChecked" class="form-check-input" />
+						<label for="CheckboxCities" class="form-check-label">@city.Text</label>
+					</div>
+				}
+			</div>
+		</div>
+
+		<div class="row justify-content-end">
+			<div class="col-sm-4">
+				<button type="submit" class="form-control btn btn-outline-success">
+					Edit a Vacancie
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+}
+

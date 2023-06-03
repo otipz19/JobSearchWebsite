@@ -11,6 +11,8 @@ using Utility.Services.Profile;
 using Utility.Interfaces.Image;
 using Utility.Services.Image;
 using Data.Entities;
+using JobSearchWebsite.MVC.ViewModels;
+using JobSearchWebsite.MVC.Validators;
 
 namespace JobSearchWebsite.MVC
 {
@@ -28,7 +30,8 @@ namespace JobSearchWebsite.MVC
         {
             return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>()
                 .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>()
-                .AddScoped<IValidator<Vacancie>, VacancieValidator>();
+                .AddScoped<IValidator<Vacancie>, VacancieValidator>()
+                .AddScoped<IValidator<VacancieVM>, VacancieVMValidator>();
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)

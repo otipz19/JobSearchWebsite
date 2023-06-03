@@ -1,0 +1,41 @@
+﻿@using Data.Entities;
+@using Data.Enums;
+@model IEnumerable<Data.Entities.Vacancie>
+@{
+    ViewData["Title"] = "Index";
+    const int MaxDescLength = 350;
+    var shortDescription = (string desc) => $"{desc.Substring(0, desc.Length < MaxDescLength ? desc.Length : MaxDescLength)}...";
+    var createdMinsAgo = (DateTime createdAt) => Math.Round((DateTime.Now - createdAt).TotalMinutes);
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="display-3">Vacancies List</h3>
+        </div>
+        @if (User.IsInRole(AppUserRoleType.Company.ToString()))
+        {
+            <div class="col-sm-6 d-flex justify-content-end align-items-center">
+                <a asp-action="Create" class="btn btn-outline-primary">
+                    Create new vacancie
+                </a>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="list-group">
+            @foreach (Vacancie vacancie in Model)
+            {
+                <a asp-action="Details" asp-route-id="@vacancie.Id" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@vacancie.Name</h5>
+                        <small>Created @createdMinsAgo(vacancie.CreatedAt) mins ago</small>
+                    </div>
+                    <p class="mb-1">@shortDescription(vacancie.Description)</p>
+                    <small class="text-muted">And some small print.</small>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+

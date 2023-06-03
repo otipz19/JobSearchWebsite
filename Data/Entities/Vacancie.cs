@@ -24,6 +24,8 @@ namespace Data.Entities
             base.Update(source);
             this.LeftSalaryFork = source.LeftSalaryFork;
             this.RightSalaryFork = source.RightSalaryFork;
+            if (source.Company != null)
+                this.Company = source.Company;
             return this;
         }
     }

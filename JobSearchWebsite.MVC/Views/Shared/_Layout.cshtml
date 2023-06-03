@@ -34,6 +34,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Jobseeker" asp-action="Index">Jobseekers</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Vacancie" asp-action="Index">Vacancies</a>
+                        </li>
                         @if (User.IsInRole(AppUserRoleType.Admin.ToString()))
                         {
                             <li class="nav-item">

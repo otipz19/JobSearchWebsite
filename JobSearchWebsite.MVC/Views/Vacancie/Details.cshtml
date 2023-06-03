@@ -1,0 +1,129 @@
+﻿@using Data.Entities;
+@using System.Security.Claims;
+@model Data.Entities.Vacancie
+@{
+	ViewData["Title"] = "Details";
+}
+
+<div class="container">
+	<div class="row mb-3">
+		<div class="col-sm-6">
+			<h3 class="display-3">@Model.Name</h3>
+		</div>
+		@if(Model.Company.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+		{
+			<div class="col-sm-6 d-flex justify-content-end align-items-center">
+				<a class="btn btn-outline-primary" asp-action="Update" asp-route-id="@Model.Id">Edit your vacancie</a>
+				<!-- Button trigger modal -->
+				<button type="button" class="btn btn-outline-danger ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+					Delete
+				</button>
+			</div>
+
+			<!-- Modal -->
+			<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<form method="post" asp-action="Delete">
+					<input hidden asp-for="Id">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title fw-bold" id="exampleModalLabel">Are you sure?</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<p class="text-danger">This vacancie will be deleted and all related data will be lost forever.</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, go back</button>
+								<button type="submit" class="btn btn-danger">Yes, delete this vacancie</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		}
+		<hr />
+	</div>
+	<div class="row gx-5">
+		<div class="col-sm-8">
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Description</label>
+				<div class="col-sm-10">
+					<p class="lead">@Model.Description</p>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Salary fork</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<span class="input-group-text">From</span>
+						<input type="number" disabled asp-for="LeftSalaryFork" class="form-control" />
+						<span class="input-group-text">To</span>
+						<input type="number" disabled asp-for="RightSalaryFork" class="form-control" />
+					</div>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Sphere</label>
+				<div class="col-sm-10">
+					<label>@Model.Sphere.Name</label>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Specialization</label>
+				<div class="col-sm-10">
+					<label>@Model.Specialization.Name</label>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Experience level</label>
+				<div class="col-sm-10">
+					<label>@Model.ExperienceLevel.Name</label>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">English level</label>
+				<div class="col-sm-10">
+					<label>@Model.EnglishLevel.Name</label>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Remoteness</label>
+				<div class="col-sm-10">
+					@Model.Remoteness.Name
+				</div>
+			</div>
+		</div>
+
+		<div class="col-sm-3">
+			<div class="row mb-3">
+				<p class="lead">Keywords</p>
+				@foreach (Keyword keyword in Model.Keywords)
+				{
+					<div class="col-auto">
+						<span class="badge bg-primary text-light">@keyword.Name</span>
+					</div>
+				}
+			</div>
+			<div class="row mb-3">
+				<p class="lead">States</p>
+				@foreach (State state in Model.States)
+				{
+					<div class="col-auto">
+						<span class="badge bg-primary text-light">@state.Name</span>
+					</div>
+				}
+			</div>
+			<div class="row mb-3">
+				<p class="lead">Cities</p>
+				@foreach (City city in Model.Cities)
+				{
+					<div class="col-auto">
+						<span class="badge bg-primary text-light">@city.Name</span>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</div>
