@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Text.Json;
-using System;
 
 namespace Utility.Toaster
 {

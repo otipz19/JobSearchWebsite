@@ -1,4 +1,4 @@
-﻿namespace Utility.Interfaces.Image
+﻿namespace Utility.Interfaces.FileUpload.Image
 {
     public interface IJobseekerImageService : IImageService
     {

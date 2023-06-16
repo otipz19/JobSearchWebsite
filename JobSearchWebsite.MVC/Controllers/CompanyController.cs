@@ -5,21 +5,28 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Utilities;
-using Utility.Interfaces.Image;
+using Utility.Interfaces.FileUpload.Image;
+using Microsoft.EntityFrameworkCore;
+using Utility.ViewModels;
+using Utility.Interfaces.BaseFilterableEntityServices;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
     public class CompanyController : BaseProfileEntityController<Company>
     {
+        private readonly IVacancieService _vacancieService;
+
         public CompanyController(AppDbContext dbContext,
             IValidator<BaseProfileEntity> validator,
-            ICompanyImageService companyImageService) : base(dbContext, validator, companyImageService)
+            ICompanyImageService companyImageService,
+            IVacancieService vacancieService) : base(dbContext, validator, companyImageService)
         {
+            _vacancieService = vacancieService;
         }
 
         [HttpGet]
         [Authorize(Policy = Constants.CompanyPolicy)]
-        public new Task<IActionResult> Edit()
+        public override Task<IActionResult> Edit()
         {
             return base.Edit();
         }
@@ -27,9 +34,24 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = Constants.CompanyPolicy)]
-        public new Task<IActionResult> Edit(Company profile)
+        public override Task<IActionResult> Edit(Company profile)
         {
             return base.Edit(profile);
+        }
+
+        [HttpGet]
+        public override async Task<IActionResult> Details(int id)
+        {
+            var company = await _dbContext.Companies.Include(c => c.Vacancies).FirstOrDefaultAsync(c => c.Id == id);
+            if(company == null)
+            {
+                return NotFound();
+            }
+            return View(new CompanyDetailsVm()
+            {
+                Company = company,
+                Vacancies = _vacancieService.GetVacancieIndexVmList(company.Vacancies),
+            });
         }
     }
 }

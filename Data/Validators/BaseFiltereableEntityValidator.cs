@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Data.Validators
 {
-	public class BaseFiltereableEntityValidator : AbstractValidator<BaseFiltereableEntity>
+	public class BaseFiltereableEntityValidator : AbstractValidator<BaseFilterableEntity>
 	{
 		public BaseFiltereableEntityValidator()
 		{

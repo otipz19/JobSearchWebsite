@@ -2,7 +2,7 @@
 
 namespace Data.Entities
 {
-	public class Resume : BaseFiltereableEntity
+	public class Resume : BaseFilterableEntity
 	{
 		public int WantedSalary { get; set; }
 

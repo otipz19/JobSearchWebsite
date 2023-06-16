@@ -2,7 +2,7 @@
 
 namespace Data.Entities.Base
 {
-	public abstract class BaseFiltereableEntity : BaseNamedEntity
+	public abstract class BaseFilterableEntity : BaseNamedEntity
 	{
 		[Required]
 		public string Description { get; set; }
@@ -29,7 +29,7 @@ namespace Data.Entities.Base
 
 		public virtual EnglishLevel EnglishLevel { get; set; }
 
-		public BaseFiltereableEntity Update(BaseFiltereableEntity source)
+		public BaseFilterableEntity Update(BaseFilterableEntity source)
 		{
 			if(source == null) 
 				throw new ArgumentNullException();

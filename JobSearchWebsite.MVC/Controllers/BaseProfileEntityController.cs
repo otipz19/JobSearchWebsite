@@ -5,7 +5,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Utility.Interfaces.Image;
+using Utility.Interfaces.FileUpload.Image;
 using Utility.Toaster;
 
 namespace JobSearchWebsite.MVC.Controllers
@@ -45,7 +45,7 @@ namespace JobSearchWebsite.MVC.Controllers
         }
 
         [HttpGet]
-        protected virtual async Task<IActionResult> Edit()
+        public virtual async Task<IActionResult> Edit()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             T profile = await _dbContext.Set<T>().FirstOrDefaultAsync(p => p.AppUserId == userId);
@@ -58,7 +58,7 @@ namespace JobSearchWebsite.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        protected virtual async Task<IActionResult> Edit(T profile)
+        public virtual async Task<IActionResult> Edit(T profile)
         {
             var validationResult = await _validator.ValidateAsync(profile);
             if (!validationResult.IsValid)

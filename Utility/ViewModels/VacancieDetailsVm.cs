@@ -1,8 +1,8 @@
 ﻿using Data.Entities;
 
-namespace JobSearchWebsite.MVC.ViewModels
+namespace Utility.ViewModels
 {
-    public class VacancieVM
+    public class VacancieDetailsVm
     {
         public string Name { get; set; }
 

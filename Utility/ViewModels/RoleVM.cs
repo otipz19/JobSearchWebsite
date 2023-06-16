@@ -1,4 +1,4 @@
-﻿namespace JobSearchWebsite.MVC.ViewModels
+﻿namespace Utility.ViewModels
 {
 	public class RoleVM
 	{

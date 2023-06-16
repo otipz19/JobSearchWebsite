@@ -1,11 +1,8 @@
 ﻿@using Data.Entities;
 @using Data.Enums;
-@model IEnumerable<Data.Entities.Vacancie>
+@model IEnumerable<Utility.ViewModels.VacancieIndexVm>
 @{
     ViewData["Title"] = "Index";
-    const int MaxDescLength = 350;
-    var shortDescription = (string desc) => $"{desc.Substring(0, desc.Length < MaxDescLength ? desc.Length : MaxDescLength)}...";
-    var createdMinsAgo = (DateTime createdAt) => Math.Round((DateTime.Now - createdAt).TotalMinutes);
 }
 
 <div class="container">
@@ -24,14 +21,14 @@
     </div>
     <div class="row">
         <div class="list-group">
-            @foreach (Vacancie vacancie in Model)
+            @foreach (VacancieIndexVm viewModel in Model)
             {
-                <a asp-action="Details" asp-route-id="@vacancie.Id" class="list-group-item list-group-item-action">
+                <a asp-action="Details" asp-route-id="@viewModel.Id" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">@vacancie.Name</h5>
-                        <small>Created @createdMinsAgo(vacancie.CreatedAt) mins ago</small>
+                        <h5 class="mb-1">@viewModel.Name</h5>
+                        <small>@viewModel.CreatedAgo</small>
                     </div>
-                    <p class="mb-1">@shortDescription(vacancie.Description)</p>
+                    <p class="mb-1">@viewModel.ShortDescription</p>
                     <small class="text-muted">And some small print.</small>
                 </a>
             }

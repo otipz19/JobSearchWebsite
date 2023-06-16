@@ -8,11 +8,13 @@ using Utility.Utilities;
 using Data.Enums;
 using Utility.Interfaces.Profile;
 using Utility.Services.Profile;
-using Utility.Interfaces.Image;
-using Utility.Services.Image;
 using Data.Entities;
-using JobSearchWebsite.MVC.ViewModels;
+using Utility.ViewModels;
 using JobSearchWebsite.MVC.Validators;
+using Utility.Interfaces.FileUpload.Image;
+using Utility.Services.FileUpload.Image;
+using Utility.Interfaces.BaseFilterableEntityServices;
+using Utility.Services.BaseFilterableEntityServices.VacancieService;
 
 namespace JobSearchWebsite.MVC
 {
@@ -31,7 +33,7 @@ namespace JobSearchWebsite.MVC
             return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>()
                 .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>()
                 .AddScoped<IValidator<Vacancie>, VacancieValidator>()
-                .AddScoped<IValidator<VacancieVM>, VacancieVMValidator>();
+                .AddScoped<IValidator<VacancieDetailsVm>, VacancieVMValidator>();
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)
@@ -57,7 +59,8 @@ namespace JobSearchWebsite.MVC
             return services.AddScoped<IJobseekerProfileService, JobseekerProfileService>()
                 .AddScoped<ICompanyProfileService, CompanyProfileService>()
                 .AddScoped<ICompanyImageService, CompanyImageService>()
-                .AddScoped<IJobseekerImageService, JobseekerImageService>();
+                .AddScoped<IJobseekerImageService, JobseekerImageService>()
+                .AddScoped<IVacancieService, VacancieService>();
         }
     }
 }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Data;
 using Data.Entities;
 using Data.Enums;
-using JobSearchWebsite.MVC.ViewModels;
+using Utility.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

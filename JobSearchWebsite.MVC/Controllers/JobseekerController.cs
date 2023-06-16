@@ -5,7 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Utilities;
-using Utility.Interfaces.Image;
+using Utility.Interfaces.FileUpload.Image;
 
 namespace JobSearchWebsite.MVC.Controllers
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Utility.Interfaces.Image;
+using Utility.Interfaces.FileUpload.Image;
 
-namespace Utility.Services.Image
+namespace Utility.Services.FileUpload.Image
 {
     public class JobseekerImageService : ImageService, IJobseekerImageService
     {
@@ -12,14 +12,14 @@ namespace Utility.Services.Image
         {
         }
 
-        public Task<string> UploadImage(IFormFile formFile)
+        public async Task<string> UploadImage(IFormFile formFile)
         {
-            return base.UploadImage(formFile, WebFolderPath);
+            return await base.UploadImage(formFile, WebFolderPath);
         }
 
         public void DeleteImage(string webImagePath)
         {
-            base.DeleteImage(webImagePath, WebFolderPath);
+            DeleteFile(webImagePath, WebFolderPath);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Utility.Interfaces.Image
+namespace Utility.Interfaces.FileUpload.Image
 {
     public interface IImageService
     {

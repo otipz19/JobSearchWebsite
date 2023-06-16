@@ -1,9 +1,10 @@
 ﻿using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore.Update.Internal;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities
 {
-    public class Vacancie : BaseFiltereableEntity
+    public class Vacancie : BaseFilterableEntity
     {
         public int LeftSalaryFork { get; set; }
 

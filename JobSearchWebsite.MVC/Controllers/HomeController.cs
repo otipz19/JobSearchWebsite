@@ -1,4 +1,4 @@
-﻿using JobSearchWebsite.MVC.ViewModels;
+﻿using Utility.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

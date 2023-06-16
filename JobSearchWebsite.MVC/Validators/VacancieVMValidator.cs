@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using JobSearchWebsite.MVC.ViewModels;
+using Utility.ViewModels;
 
 namespace JobSearchWebsite.MVC.Validators
 {
-	public class VacancieVMValidator : AbstractValidator<VacancieVM>
+	public class VacancieVMValidator : AbstractValidator<VacancieDetailsVm>
 	{
         public VacancieVMValidator()
         {
