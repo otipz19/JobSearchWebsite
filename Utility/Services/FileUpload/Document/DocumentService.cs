@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Utility.Interfaces.FileUpload.Document;
 
 namespace Utility.Services.FileUpload.Document
 {

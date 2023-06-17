@@ -4,7 +4,9 @@ namespace Data.Entities
 {
 	public class Resume : BaseFilterableEntity
 	{
-		public int WantedSalary { get; set; }
+        public string DocumentPath { get; set; }
+
+        public int WantedSalary { get; set; }
 
         public int JobseekerId { get; set; }
 

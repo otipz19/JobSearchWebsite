@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
 using Utility.ViewModels;
 
-namespace JobSearchWebsite.MVC.Validators
+namespace Utility.Validators
 {
-	public class VacancieVMValidator : AbstractValidator<VacancieDetailsVm>
+	public class ResumeDetailsVmValidator : AbstractValidator<ResumeDetailsVm>
 	{
-        public VacancieVMValidator()
+        public ResumeDetailsVmValidator()
         {
 			RuleFor(v => v.Name)
 			   .NotEmpty()
@@ -13,15 +13,9 @@ namespace JobSearchWebsite.MVC.Validators
 			RuleFor(v => v.Description)
 				.NotEmpty()
 				.Length(100, 2000);
-			RuleFor(v => v.LeftSalaryFork)
+			RuleFor(v => v.WantedSalary)
 				.NotEmpty()
-				.GreaterThan(0)
-				.Must((v, lsf) => lsf <= v.RightSalaryFork)
-				.WithMessage("'From' field should be less than 'To' field");
-			RuleFor(v => v.RightSalaryFork)
-				.NotEmpty()
-				.GreaterThan(0)
-				.LessThanOrEqualTo(int.MaxValue);
+				.GreaterThan(0);
 			RuleFor(v => v.SphereId)
 				.NotEmpty();
 			RuleFor(v => v.SpecializationId)
@@ -31,6 +25,10 @@ namespace JobSearchWebsite.MVC.Validators
 			RuleFor(v => v.ExperienceLevelId)
 				.NotEmpty();
 			RuleFor(v => v.EnglishLevelId)
+				.NotEmpty();
+			RuleFor(v => v.StateId)
+				.NotEmpty();
+			RuleFor(v => v.CityId)
 				.NotEmpty();
 		}
     }

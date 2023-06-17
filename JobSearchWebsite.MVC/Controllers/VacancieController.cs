@@ -37,7 +37,7 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            Vacancie vacancie = await _vacancieService.EagerLoadVacancieAsNoTracking(id);
+            Vacancie vacancie = await _vacancieService.EagerLoadAsNoTracking(id);
             if (vacancie == null)
             {
                 return NotFound();
@@ -88,14 +88,14 @@ namespace JobSearchWebsite.MVC.Controllers
             _dbContext.Vacancies.Add(vacancie);
             await _dbContext.SaveChangesAsync();
             TempData.Toaster().Success("Vacancie was created succesfully");
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new {id = vacancie.Id});
         }
 
         [HttpGet]
         [Authorize(Policy = Constants.CompanyPolicy)]
         public async Task<IActionResult> Update(int id)
         {
-            Vacancie toUpdate = await _vacancieService.EagerLoadVacancieAsNoTracking(id);
+            Vacancie toUpdate = await _vacancieService.EagerLoadAsNoTracking(id);
             if (toUpdate == null)
             {
                 return NotFound();
@@ -122,7 +122,7 @@ namespace JobSearchWebsite.MVC.Controllers
                 return View(viewModel);
             }
 
-            Vacancie toUpdate = await _vacancieService.EagerLoadVacancie(id);
+            Vacancie toUpdate = await _vacancieService.EagerLoad(id);
             if (toUpdate == null)
             {
                 return NotFound();

@@ -18,12 +18,10 @@ namespace Utility.Interfaces.BaseFilterableEntityServices
 
         public Task<VacancieDetailsVm> GetNewVacancieDetailsVm();
 
-        public Task<List<Vacancie>> EagerLoadVacanciesListAsNoTracking();
+        public Task<List<Vacancie>> EagerLoadListAsNoTracking();
 
-        public Task<Vacancie> EagerLoadVacancieAsNoTracking(int id);
+        public Task<Vacancie> EagerLoadAsNoTracking(int id);
 
-        public Task<Vacancie> EagerLoadVacancie(int id);
-
-        public IQueryable<Vacancie> IncludeAllNavProps();
+        public Task<Vacancie> EagerLoad(int id);
     }
 }

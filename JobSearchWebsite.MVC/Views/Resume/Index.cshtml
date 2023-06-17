@@ -1,0 +1,38 @@
+﻿@using Data.Entities;
+@using Data.Enums;
+@model IEnumerable<Utility.ViewModels.ResumeIndexVm>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="display-3">Resumes List</h3>
+        </div>
+        @if (User.IsInRole(AppUserRoleType.Jobseeker.ToString()))
+        {
+            <div class="col-sm-6 d-flex justify-content-end align-items-center">
+                <a asp-action="Create" class="btn btn-outline-primary">
+                    Create new resume
+                </a>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="list-group">
+            @foreach (ResumeIndexVm viewModel in Model)
+            {
+                <a asp-action="Details" asp-route-id="@viewModel.Id" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@viewModel.Name</h5>
+                        <small>@viewModel.CreatedAgo</small>
+                    </div>
+                    <p class="mb-1">@viewModel.ShortDescription</p>
+                    <small class="text-muted">And some small print.</small>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+

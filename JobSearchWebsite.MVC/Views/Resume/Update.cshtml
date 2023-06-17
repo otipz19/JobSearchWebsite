@@ -1,0 +1,166 @@
+﻿@using Data.Entities;
+@model Utility.ViewModels.ResumeDetailsVm
+@{
+	ViewData["Title"] = "Edit";
+}
+
+<div class="container">
+	<div class="row mb-3">
+		<div class="">
+			<h3 class="display-3">Edit @Model.Name Resume</h3>
+		</div>
+		<hr />
+	</div>
+	<form asp-action="Update" method="post" class="row gx-5" enctype="multipart/form-data">
+		<div class="col-sm-8">
+			<div class="row mb-3">
+				<label asp-for="Name" class="col-sm-2 col-form-label">Title of resume</label>
+				<div class="col-sm-10">
+					<input asp-for="Name" class="form-control" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="Description" class="col-sm-2 col-form-label"></label>
+				<div class="col-sm-10">
+					<textarea asp-for="Description" class="form-control"></textarea>
+					<span asp-validation-for="Description" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label class="col-sm-2 col-form-label">Wanted Salary</label>
+				<div class="col-sm-10">
+					<div class="input-group">
+						<input type="number" asp-for="WantedSalary" class="form-control" />
+						<span class="input-group-text">$</span>
+					</div>
+					<span asp-validation-for="WantedSalary" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<label asp-for="SphereId" class="col-sm-2 col-form-label">Sphere</label>
+				<div class="col-sm-10">
+					<select asp-for="SphereId" class="form-select">
+						<option selected disabled value="">--Select a sphere--</option>
+						@foreach (Sphere sphere in Model.AvailableSpheres)
+						{
+							<option value="@sphere.Id">@sphere.Name</option>
+						}
+					</select>
+					<span asp-validation-for="SphereId" class="text-danger"></span>
+				</div>
+
+			</div>
+			<div class="row mb-3">
+				<label asp-for="SpecializationId" class="col-sm-2 col-form-label">Specialization</label>
+				<div class="col-sm-10">
+					<select asp-for="SpecializationId" class="form-select">
+						<option selected disabled value="">--Select a specialization--</option>
+						@foreach (Specialization specialization in Model.AvailableSpecializations)
+						{
+							<option value="@specialization.Id">@specialization.Name</option>
+						}
+					</select>
+					<span asp-validation-for="SpecializationId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="ExperienceLevelId" class="col-sm-2 col-form-label">Experience level</label>
+				<div class="col-sm-10">
+					<select asp-for="ExperienceLevelId" class="form-select">
+						<option selected disabled value="">--Select an experience level--</option>
+						@foreach (ExperienceLevel experienceLevel in Model.AvailableExperienceLevels)
+						{
+							<option value="@experienceLevel.Id">@experienceLevel.Name</option>
+						}
+					</select>
+					<span asp-validation-for="ExperienceLevelId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="EnglishLevelId" class="col-sm-2 col-form-label">English level</label>
+				<div class="col-sm-10">
+					<select asp-for="EnglishLevelId" class="form-select">
+						<option selected disabled value="">--Select an english level--</option>
+						@foreach (EnglishLevel englishLevel in Model.AvailableEnglishLevels)
+						{
+							<option value="@englishLevel.Id">@englishLevel.Name</option>
+						}
+					</select>
+					<span asp-validation-for="EnglishLevelId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="RemotenessId" class="col-sm-2 col-form-label">Remoteness</label>
+				<div class="col-sm-10">
+					<select asp-for="RemotenessId" class="form-select">
+						<option selected disabled value="">--Select a remoteness--</option>
+						@foreach (Remoteness remoteness in Model.AvailableRemotenesses)
+						{
+							<option value="@remoteness.Id">@remoteness.Name</option>
+						}
+					</select>
+					<span asp-validation-for="RemotenessId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="StateId" class="col-sm-2 col-form-label">State</label>
+				<div class="col-sm-10">
+					<select asp-for="StateId" class="form-select">
+						<option selected disabled value="">--Select a state--</option>
+						@foreach (State state in Model.AvailableStates)
+						{
+							<option value="@state.Id">@state.Name</option>
+						}
+					</select>
+					<span asp-validation-for="StateId" class="text-danger"></span>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<label asp-for="CityId" class="col-sm-2 col-form-label">City</label>
+				<div class="col-sm-10">
+					<select asp-for="CityId" class="form-select">
+						<option selected disabled value="">--Select a city--</option>
+						@foreach (City city in Model.AvailableCities)
+						{
+							<option value="@city.Id">@city.Name</option>
+						}
+					</select>
+					<span asp-validation-for="CityId" class="text-danger"></span>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-sm-3">
+			<div class="row mb-3">
+				<p class="lead">Keywords</p>
+				@foreach (CheckboxOption keyword in Model.CheckboxKeywords)
+				{
+					<div class="form-check col-auto ms-2">
+						<input type="checkbox" value="@keyword.Value" name="@(nameof(Model.SelectedKeywords))" id="@keyword.Value" checked="@keyword.IsChecked" class="form-check-input" />
+						<label for="CheckboxKeywords" class="form-check-label">@keyword.Text</label>
+					</div>
+				}
+			</div>
+
+			<div class="row mb-3">
+				<p class="lead">Upload file</p>
+				<input class="form-control" name="files" type="file" accept="application/pdf,application/doc,application/docx" />
+			</div>
+		</div>
+
+		<div class="row justify-content-end">
+			<div class="col-sm-4">
+				<button type="submit" class="form-control btn btn-outline-success">
+					Edit a Resume
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+}
+

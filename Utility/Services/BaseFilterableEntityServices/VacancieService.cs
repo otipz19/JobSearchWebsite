@@ -9,15 +9,12 @@ using System.Text;
 using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.ViewModels;
 
-namespace Utility.Services.BaseFilterableEntityServices.VacancieService
+namespace Utility.Services.BaseFilterableEntityServices
 {
-    public class VacancieService : IVacancieService
+    public class VacancieService : BaseFilterableEntityService<Vacancie>, IVacancieService
     {
-        private readonly AppDbContext _dbContext;
-
-        public VacancieService(AppDbContext dbContext)
+        public VacancieService(AppDbContext dbContext) : base(dbContext)
         {
-            _dbContext = dbContext;
         }
 
         public List<VacancieIndexVm> GetVacancieIndexVmList(IEnumerable<Vacancie> vacancies)
@@ -29,33 +26,6 @@ namespace Utility.Services.BaseFilterableEntityServices.VacancieService
                 ShortDescription = GetShortDescription(v.Description),
                 CreatedAgo = GetCreatedAgo(v.CreatedAt),
             }).ToList();
-
-            string GetShortDescription(string d)
-            {
-                const int ShortDescriptionLength = 350;
-                return $"{d.Substring(0, d.Length < ShortDescriptionLength ? d.Length : ShortDescriptionLength)}...";
-            }
-
-            string GetCreatedAgo(DateTime createdAt)
-            {
-                double fullDays = Math.Floor((DateTime.Now - createdAt).TotalDays);
-                createdAt += TimeSpan.FromDays(fullDays);
-                double fullHours = Math.Floor((DateTime.Now - createdAt).TotalHours);
-                createdAt += TimeSpan.FromHours(fullHours);
-                double fullMins = Math.Floor((DateTime.Now - createdAt).TotalMinutes);
-                createdAt += TimeSpan.FromMinutes(fullMins);
-
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append("Created ");
-                if (fullDays > 0)
-                    stringBuilder.Append($"{fullDays} days ");
-                if (fullHours > 0)
-                    stringBuilder.Append($"{fullHours} hours ");
-                if (fullMins > 0)
-                    stringBuilder.Append($"{fullMins} minutes ");
-                stringBuilder.Append("ago");
-                return stringBuilder.ToString();
-            }
         }
 
         public bool UserHasAccessTo(ClaimsPrincipal user, Vacancie vacancie)
@@ -92,22 +62,6 @@ namespace Utility.Services.BaseFilterableEntityServices.VacancieService
             await SetCollectionNavProp(vacancie.Cities, viewModel.SelectedCities);
 
             return vacancie;
-
-            async Task<int> GetForeignKey<T>(int sourceId)
-                where T : BaseFilteringEntity
-            {
-                var foreignKey = await _dbContext.Set<T>().Select(e => new { e.Id }).FirstOrDefaultAsync(e => e.Id == sourceId);
-                Guard.Against.Null(foreignKey.Id);
-                return foreignKey.Id;
-            }
-
-            async Task SetCollectionNavProp<T>(List<T> navProp, IEnumerable<string> ids)
-                where T : BaseFilteringEntity
-            {
-                navProp.AddRange(await _dbContext.Set<T>()
-                    .Where(e => ids.Select(k => int.Parse(k)).Contains(e.Id))
-                    .ToListAsync());
-            }
         }
 
         public async Task<VacancieDetailsVm> MapEntityToViewModel(Vacancie vacancie)
@@ -147,35 +101,6 @@ namespace Utility.Services.BaseFilterableEntityServices.VacancieService
             return viewModel;
         }
 
-        public async Task<List<Vacancie>> EagerLoadVacanciesListAsNoTracking()
-        {
-            return await IncludeAllNavProps().AsNoTracking().ToListAsync();
-        }
-
-        public async Task<Vacancie> EagerLoadVacancieAsNoTracking(int id)
-        {
-            return await IncludeAllNavProps().AsNoTracking().FirstOrDefaultAsync(v => v.Id == id);
-        }
-
-        public async Task<Vacancie> EagerLoadVacancie(int id)
-        {
-            return await IncludeAllNavProps().FirstOrDefaultAsync(v => v.Id == id);
-        }
-
-        public IQueryable<Vacancie> IncludeAllNavProps()
-        {
-            return _dbContext.Vacancies
-                            .Include(v => v.Company)
-                            .Include(v => v.States)
-                            .Include(v => v.Cities)
-                            .Include(v => v.Sphere)
-                            .Include(v => v.Specialization)
-                            .Include(v => v.Keywords)
-                            .Include(v => v.Remoteness)
-                            .Include(v => v.ExperienceLevel)
-                            .Include(v => v.EnglishLevel);
-        }
-
         private async Task PopulateVM(VacancieDetailsVm viewModel)
         {
             await AddCheckboxOptionsToVM(viewModel);
@@ -191,19 +116,8 @@ namespace Utility.Services.BaseFilterableEntityServices.VacancieService
             viewModel.CheckboxKeywords = await MapCheckboxOptions(_dbContext.Keywords);
             viewModel.CheckboxStates = await MapCheckboxOptions(_dbContext.States);
             viewModel.CheckboxCities = await MapCheckboxOptions(_dbContext.Cities);
-
-            async Task<List<CheckboxOption>> MapCheckboxOptions(IQueryable<BaseFilteringEntity> filters)
-            {
-                return await filters.Select(f => new CheckboxOption()
-                {
-                    IsChecked = false,
-                    Text = f.Name,
-                    Value = f.Id.ToString(),
-                })
-                .ToListAsync();
-            }
         }
-        
+
         private void SetCheckboxesInVM<T>(VacancieDetailsVm viewModel,
             IEnumerable<T> keywords,
             IEnumerable<T> states,

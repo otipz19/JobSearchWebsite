@@ -28,15 +28,5 @@ namespace Data.Entities.Base
 		public int EnglishLevelId { get; set; }
 
 		public virtual EnglishLevel EnglishLevel { get; set; }
-
-		public BaseFilterableEntity Update(BaseFilterableEntity source)
-		{
-			if(source == null) 
-				throw new ArgumentNullException();
-			base.Update(source);
-			if(source.Description != null)
-				this.Description = source.Description;
-			return this;
-		}
 	}
 }
