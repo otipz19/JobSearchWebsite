@@ -54,16 +54,16 @@ namespace Utility.Services.BaseFilterableEntityServices
         protected string GetCreatedAgo(DateTime createdAt)
         {
             TimeSpan createdAgo = DateTime.Now - createdAt;
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("Created ");
+            string msg = "Created ";
             if (createdAgo.Days > 0)
-                stringBuilder.Append($"{createdAgo.Days} days ");
-            if (createdAgo.Hours > 0)
-                stringBuilder.Append($"{createdAgo.Hours} hours ");
-            if (createdAgo.Minutes > 0)
-                stringBuilder.Append($"{createdAgo.Minutes} minutes ");
-            stringBuilder.Append("ago");
-            return stringBuilder.ToString();
+                msg += $"{createdAgo.Days} days ago";
+            else if (createdAgo.Hours > 0)
+				msg += $"{createdAgo.Hours} hours ago";
+            else if (createdAgo.Minutes > 0)
+				msg += $"{createdAgo.Minutes} minutes ago";
+            else
+                msg = "Just created";
+            return msg;
         }
 
         protected async Task<int> GetForeignKey<T>(int sourceId)

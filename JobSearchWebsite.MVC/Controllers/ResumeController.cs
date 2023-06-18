@@ -19,12 +19,12 @@ namespace JobSearchWebsite.MVC.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IResumeService _resumeService;
-        private readonly IValidator<ResumeDetailsVm> _validator;
+        private readonly IValidator<ResumeUpsertVm> _validator;
         private readonly IResumeDocumentService _documentService;
 
         public ResumeController(AppDbContext dbContext,
             IResumeService resumeService,
-            IValidator<ResumeDetailsVm> validator,
+            IValidator<ResumeUpsertVm> validator,
             IResumeDocumentService documentService)
         {
             _dbContext = dbContext;
@@ -55,14 +55,14 @@ namespace JobSearchWebsite.MVC.Controllers
         [Authorize(Policy = Constants.JobseekerPolicy)]
         public async Task<IActionResult> Create()
         {
-            ResumeDetailsVm viewModel = await _resumeService.GetNewResumeDetailsVm();
+            ResumeUpsertVm viewModel = await _resumeService.GetNewResumeUpsertVm();
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = Constants.JobseekerPolicy)]
-        public async Task<IActionResult> Create(ResumeDetailsVm viewModel)
+        public async Task<IActionResult> Create(ResumeUpsertVm viewModel)
         {
             var validationResult = await _validator.ValidateAsync(viewModel);
             if (!validationResult.IsValid)
@@ -121,25 +121,25 @@ namespace JobSearchWebsite.MVC.Controllers
             {
                 return NotFound();
             }
-            if(!_resumeService.UserHasAccessTo(User, toUpdate))
+            if(! await _resumeService.UserHasAccessTo(User, toUpdate))
             {
                 return Forbid();
             }
-            ResumeDetailsVm viewModel = await _resumeService.MapEntityToViewModel(toUpdate);
+            ResumeUpsertVm viewModel = await _resumeService.MapEntityToViewModel(toUpdate);
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = Constants.JobseekerPolicy)]
-        public async Task<IActionResult> Update(int id, ResumeDetailsVm viewModel)
+        public async Task<IActionResult> Update(int id, ResumeUpsertVm viewModel)
         {
             Resume toUpdate = await _resumeService.EagerLoad(id);
             if (toUpdate == null)
             {
                 return NotFound();
             }
-            if (!_resumeService.UserHasAccessTo(User, toUpdate))
+            if (! await _resumeService.UserHasAccessTo(User, toUpdate))
             {
                 return Forbid();
             }
@@ -195,7 +195,7 @@ namespace JobSearchWebsite.MVC.Controllers
             {
                 return NotFound();
             }
-            if(!_resumeService.UserHasAccessTo(User, toDelete))
+            if(! await _resumeService.UserHasAccessTo(User, toDelete))
             {
                 return Forbid();
             }

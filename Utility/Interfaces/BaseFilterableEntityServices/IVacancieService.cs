@@ -8,15 +8,15 @@ namespace Utility.Interfaces.BaseFilterableEntityServices
     {
         public List<VacancieIndexVm> GetVacancieIndexVmList(IEnumerable<Vacancie> vacancies);
 
-        public bool UserHasAccessTo(ClaimsPrincipal user, Vacancie vacancie);
+        public Task<bool> UserHasAccessTo(ClaimsPrincipal user, Vacancie vacancie);
 
-        public Task<Vacancie> MapViewModelToEntity(VacancieDetailsVm viewModel, Vacancie vacancie = null);
+        public Task<Vacancie> MapViewModelToEntity(VacancieUpsertVm viewModel, Vacancie vacancie = null);
 
-        public Task<VacancieDetailsVm> MapEntityToViewModel(Vacancie vacancie);
+        public Task<VacancieUpsertVm> MapEntityToViewModel(Vacancie vacancie);
 
-        public Task PopulateVmOnValidationFail(VacancieDetailsVm viewModel);
+        public Task PopulateVmOnValidationFail(VacancieUpsertVm viewModel);
 
-        public Task<VacancieDetailsVm> GetNewVacancieDetailsVm();
+        public Task<VacancieUpsertVm> GetNewVacancieUpsertVm();
 
         public Task<List<Vacancie>> EagerLoadListAsNoTracking();
 

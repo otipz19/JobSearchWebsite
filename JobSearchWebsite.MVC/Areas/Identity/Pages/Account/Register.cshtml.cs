@@ -150,7 +150,9 @@ namespace JobSearchWebsite.MVC.Areas.Identity.Pages.Account
 					//Add user to role
 					try
 					{
-                        await _userManager.AddToRoleAsync(user, ((AppUserRoleType)Input.SelectedRole).ToString());
+						if (((AppUserRoleType)Input.SelectedRole) == AppUserRoleType.Admin)
+							return Page();
+						await _userManager.AddToRoleAsync(user, ((AppUserRoleType)Input.SelectedRole).ToString());
                     }
 					catch
 					{

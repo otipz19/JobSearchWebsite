@@ -1,6 +1,7 @@
 ﻿@using Data.Entities;
 @using System.Security.Claims;
-@model Data.Entities.Vacancie
+@using Data.Enums;
+@model Utility.ViewModels.VacancieDetailsVm
 @{
 	ViewData["Title"] = "Details";
 }
@@ -8,12 +9,12 @@
 <div class="container">
 	<div class="row mb-3">
 		<div class="col-sm-6">
-			<h3 class="display-3">@Model.Name</h3>
+			<h3 class="display-3">@Model.Vacancie.Name</h3>
 		</div>
-		@if(Model.Company.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+		@if(Model.Vacancie.Company.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
 		{
 			<div class="col-sm-6 d-flex justify-content-end align-items-center">
-				<a class="btn btn-outline-primary" asp-action="Update" asp-route-id="@Model.Id">Edit your vacancie</a>
+				<a class="btn btn-outline-primary" asp-action="Update" asp-route-id="@Model.Vacancie.Id">Edit your vacancie</a>
 				<!-- Button trigger modal -->
 				<button type="button" class="btn btn-outline-danger ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
 					Delete
@@ -23,7 +24,7 @@
 			<!-- Modal -->
 			<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<form method="post" asp-action="Delete">
-					<input hidden asp-for="Id">
+					<input hidden asp-for="Vacancie.Id">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -49,7 +50,7 @@
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Description</label>
 				<div class="col-sm-10 p-2">
-					<p class="lead">@Model.Description</p>
+					<p class="lead">@Model.Vacancie.Description</p>
 				</div>
 			</div>
 			<div class="row mb-3">
@@ -57,9 +58,9 @@
 				<div class="col-sm-10 p-2">
 					<div class="input-group">
 						<span class="input-group-text">From</span>
-						<input type="number" disabled asp-for="LeftSalaryFork" class="form-control" />
+						<input type="number" disabled asp-for="Vacancie.LeftSalaryFork" class="form-control" />
 						<span class="input-group-text">To</span>
-						<input type="number" disabled asp-for="RightSalaryFork" class="form-control" />
+						<input type="number" disabled asp-for="Vacancie.RightSalaryFork" class="form-control" />
 					</div>
 				</div>
 			</div>
@@ -67,31 +68,31 @@
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Sphere</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.Sphere.Name</label>
+					<label>@Model.Vacancie.Sphere.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Specialization</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.Specialization.Name</label>
+					<label>@Model.Vacancie.Specialization.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Experience level</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.ExperienceLevel.Name</label>
+					<label>@Model.Vacancie.ExperienceLevel.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">English level</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.EnglishLevel.Name</label>
+					<label>@Model.Vacancie.EnglishLevel.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Remoteness</label>
 				<div class="col-sm-10 p-2">
-					@Model.Remoteness.Name
+					@Model.Vacancie.Remoteness.Name
 				</div>
 			</div>
 		</div>
@@ -99,7 +100,7 @@
 		<div class="col-sm-3">
 			<div class="row mb-3">
 				<p class="lead p-2">Keywords</p>
-				@foreach (Keyword keyword in Model.Keywords)
+				@foreach (Keyword keyword in Model.Vacancie.Keywords)
 				{
 					<div class="col-auto">
 						<span class="badge bg-primary text-light">@keyword.Name</span>
@@ -108,7 +109,7 @@
 			</div>
 			<div class="row mb-3">
 				<p class="lead p-2">States</p>
-				@foreach (State state in Model.States)
+				@foreach (State state in Model.Vacancie.States)
 				{
 					<div class="col-auto">
 						<span class="badge bg-primary text-light">@state.Name</span>
@@ -117,7 +118,7 @@
 			</div>
 			<div class="row mb-3">
 				<p class="lead p-2">Cities</p>
-				@foreach (City city in Model.Cities)
+				@foreach (City city in Model.Vacancie.Cities)
 				{
 					<div class="col-auto">
 						<span class="badge bg-primary text-light">@city.Name</span>
@@ -126,4 +127,36 @@
 			</div>
 		</div>
 	</div>
+
+	@if (User.IsInRole(AppUserRoleType.Jobseeker.ToString()))
+	{
+		<div class="row justify-content-end">
+			<div class="col-sm-6">
+				<form method="post" asp-action="Respond">
+					<input hidden asp-for="Vacancie.Id" />
+					<div class="row mb-3">
+						<label asp-for="SelectedResumeId" class="col-sm-4 col-form-label">Select your resume</label>
+						<div class="col-sm-8">
+							<select asp-for="SelectedResumeId" class="form-select">
+								<option selected disabled value="">--Select a resume--</option>
+								@foreach (Resume resume in Model.AvailableResumes)
+								{
+									<option value="@resume.Id">@resume.Name</option>
+								}
+							</select>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div>
+							<button type="submit" class="btn btn-outline-primary form-control">
+								Send CV
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+	
 </div>

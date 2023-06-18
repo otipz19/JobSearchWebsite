@@ -8,15 +8,15 @@ namespace Utility.Interfaces.BaseFilterableEntityServices
     {
         public List<ResumeIndexVm> GetResumeIndexVmList(IEnumerable<Resume> resumes);
 
-        public bool UserHasAccessTo(ClaimsPrincipal user, Resume resume);
+        public Task<bool> UserHasAccessTo(ClaimsPrincipal user, Resume resume);
 
-        public Task<Resume> MapViewModelToEntity(ResumeDetailsVm viewModel, Resume resume = null);
+        public Task<Resume> MapViewModelToEntity(ResumeUpsertVm viewModel, Resume resume = null);
 
-        public Task<ResumeDetailsVm> MapEntityToViewModel(Resume resume);
+        public Task<ResumeUpsertVm> MapEntityToViewModel(Resume resume);
 
-        public Task PopulateVmOnValidationFail(ResumeDetailsVm viewModel);
+        public Task PopulateVmOnValidationFail(ResumeUpsertVm viewModel);
 
-        public Task<ResumeDetailsVm> GetNewResumeDetailsVm();
+        public Task<ResumeUpsertVm> GetNewResumeUpsertVm();
 
         public Task<List<Resume>> EagerLoadListAsNoTracking();
 

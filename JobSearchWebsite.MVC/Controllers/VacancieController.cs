@@ -1,6 +1,5 @@
 ﻿using Data;
 using Data.Entities;
-using Data.Entities.Base;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Utility.ViewModels;
@@ -11,163 +10,223 @@ using System.Security.Claims;
 using Utility.Toaster;
 using Utility.Utilities;
 using Utility.Interfaces.BaseFilterableEntityServices;
+using Data.Enums;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
-    public class VacancieController : Controller
-    {
-        private readonly AppDbContext _dbContext;
-        private readonly IValidator<VacancieDetailsVm> _validator;
-        private readonly IVacancieService _vacancieService;
+	public class VacancieController : Controller
+	{
+		private readonly AppDbContext _dbContext;
+		private readonly IValidator<VacancieUpsertVm> _validator;
+		private readonly IVacancieService _vacancieService;
+		private readonly IResumeService _resumeService;
 
-        public VacancieController(AppDbContext dbContext, IValidator<VacancieDetailsVm> validator, IVacancieService vacancieService)
-        {
-            _dbContext = dbContext;
-            _validator = validator;
-            _vacancieService = vacancieService;
-        }
+		public VacancieController(AppDbContext dbContext,
+			IValidator<VacancieUpsertVm> validator,
+			IVacancieService vacancieService,
+			IResumeService resumeService)
+		{
+			_dbContext = dbContext;
+			_validator = validator;
+			_vacancieService = vacancieService;
+			_resumeService = resumeService;
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            var vacancies = _vacancieService.GetVacancieIndexVmList(await _dbContext.Vacancies.ToListAsync());
-            return View(vacancies);
-        }
+		[HttpGet]
+		public async Task<IActionResult> Index()
+		{
+			var vacancies = _vacancieService.GetVacancieIndexVmList(await _dbContext.Vacancies.ToListAsync());
+			return View(vacancies);
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> Details(int id)
-        {
-            Vacancie vacancie = await _vacancieService.EagerLoadAsNoTracking(id);
-            if (vacancie == null)
-            {
-                return NotFound();
-            }
-            return View(vacancie);
-        }
+		[HttpGet]
+		public async Task<IActionResult> Details(int id)
+		{
+			Vacancie vacancie = await _vacancieService.EagerLoadAsNoTracking(id);
+			if (vacancie == null)
+			{
+				return NotFound();
+			}
+			var viewModel = new VacancieDetailsVm()
+			{
+				Vacancie = vacancie
+			};
+			if (User.IsInRole(AppUserRoleType.Jobseeker.ToString()))
+			{
+				var jobseeker = await _dbContext.Jobseekers.AsNoTracking()
+					.FirstOrDefaultAsync(j => j.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+				viewModel.AvailableResumes = await _dbContext.Resumes.AsNoTracking()
+					.Where(r => r.JobseekerId == jobseeker.Id)
+					.ToListAsync();
+			}
+			return View(viewModel);
+		}
 
-        [HttpGet]
-        [Authorize(Policy = Constants.CompanyPolicy)]
-        public async Task<IActionResult> Create()
-        {
-            var viewModel = await _vacancieService.GetNewVacancieDetailsVm();
-            return View(viewModel);
-        }
+		[HttpGet]
+		[Authorize(Policy = Constants.CompanyPolicy)]
+		public async Task<IActionResult> Create()
+		{
+			var viewModel = await _vacancieService.GetNewVacancieUpsertVm();
+			return View(viewModel);
+		}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Policy = Constants.CompanyPolicy)]
-        public async Task<IActionResult> Create(VacancieDetailsVm viewModel)
-        {
-            var validationResult = await _validator.ValidateAsync(viewModel);
-            if (!validationResult.IsValid)
-            {
-                validationResult.AddToModelState(ModelState);
-                TempData.Toaster().ValidationFailed(validationResult);
-                await _vacancieService.PopulateVmOnValidationFail(viewModel);
-                return View(viewModel);
-            }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize(Policy = Constants.CompanyPolicy)]
+		public async Task<IActionResult> Create(VacancieUpsertVm viewModel)
+		{
+			var validationResult = await _validator.ValidateAsync(viewModel);
+			if (!validationResult.IsValid)
+			{
+				validationResult.AddToModelState(ModelState);
+				TempData.Toaster().ValidationFailed(validationResult);
+				await _vacancieService.PopulateVmOnValidationFail(viewModel);
+				return View(viewModel);
+			}
 
-            Vacancie vacancie;
-            try
-            {
-                vacancie = await _vacancieService.MapViewModelToEntity(viewModel);
-            }
-            catch
-            {
-                return NotFound();
-            }
+			Vacancie vacancie;
+			try
+			{
+				vacancie = await _vacancieService.MapViewModelToEntity(viewModel);
+			}
+			catch
+			{
+				return NotFound();
+			}
 
-            Company company = await _dbContext.Companies
-                .FirstOrDefaultAsync(c => c.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (company == null)
-            {
-                return NotFound();
-            }
-            vacancie.Company = company;
+			Company company = await _dbContext.Companies
+				.FirstOrDefaultAsync(c => c.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+			if (company == null)
+			{
+				return NotFound();
+			}
+			vacancie.Company = company;
 
-            _dbContext.Vacancies.Add(vacancie);
-            await _dbContext.SaveChangesAsync();
-            TempData.Toaster().Success("Vacancie was created succesfully");
-            return RedirectToAction(nameof(Details), new {id = vacancie.Id});
-        }
+			_dbContext.Vacancies.Add(vacancie);
+			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success("Vacancie was created succesfully");
+			return RedirectToAction(nameof(Details), new { id = vacancie.Id });
+		}
 
-        [HttpGet]
-        [Authorize(Policy = Constants.CompanyPolicy)]
-        public async Task<IActionResult> Update(int id)
-        {
-            Vacancie toUpdate = await _vacancieService.EagerLoadAsNoTracking(id);
-            if (toUpdate == null)
-            {
-                return NotFound();
-            }
-            if (!_vacancieService.UserHasAccessTo(User, toUpdate))
-            {
-                return Forbid();
-            }
-            return View(await _vacancieService.MapEntityToViewModel(toUpdate));
-        }
+		[HttpGet]
+		[Authorize(Policy = Constants.CompanyPolicy)]
+		public async Task<IActionResult> Update(int id)
+		{
+			Vacancie toUpdate = await _vacancieService.EagerLoadAsNoTracking(id);
+			if (toUpdate == null)
+			{
+				return NotFound();
+			}
+			if (! await _vacancieService.UserHasAccessTo(User, toUpdate))
+			{
+				return Forbid();
+			}
+			return View(await _vacancieService.MapEntityToViewModel(toUpdate));
+		}
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Policy = Constants.CompanyPolicy)]
-        public async Task<IActionResult> Update(int id, VacancieDetailsVm viewModel)
-        {
-            var validationResult = await _validator.ValidateAsync(viewModel);
-            if (!validationResult.IsValid)
-            {
-                validationResult.AddToModelState(ModelState);
-                TempData.Toaster().ValidationFailed(validationResult);
-                await _vacancieService.PopulateVmOnValidationFail(viewModel);
-                return View(viewModel);
-            }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize(Policy = Constants.CompanyPolicy)]
+		public async Task<IActionResult> Update(int id, VacancieUpsertVm viewModel)
+		{
+			var validationResult = await _validator.ValidateAsync(viewModel);
+			if (!validationResult.IsValid)
+			{
+				validationResult.AddToModelState(ModelState);
+				TempData.Toaster().ValidationFailed(validationResult);
+				await _vacancieService.PopulateVmOnValidationFail(viewModel);
+				return View(viewModel);
+			}
 
-            Vacancie toUpdate = await _vacancieService.EagerLoad(id);
-            if (toUpdate == null)
-            {
-                return NotFound();
-            }
-            if (!_vacancieService.UserHasAccessTo(User, toUpdate))
-            {
-                return Forbid();
-            }
+			Vacancie toUpdate = await _vacancieService.EagerLoad(id);
+			if (toUpdate == null)
+			{
+				return NotFound();
+			}
+			if (! await _vacancieService.UserHasAccessTo(User, toUpdate))
+			{
+				return Forbid();
+			}
 
-            try
-            {
-                await _vacancieService.MapViewModelToEntity(viewModel, toUpdate);
-            }
-            catch
-            {
-                return NotFound();
-            }
+			try
+			{
+				await _vacancieService.MapViewModelToEntity(viewModel, toUpdate);
+			}
+			catch
+			{
+				return NotFound();
+			}
 
-            _dbContext.Vacancies.Update(toUpdate);
-            await _dbContext.SaveChangesAsync();
-            TempData.Toaster().Success("Vacancie was edited succesfully");
-            return RedirectToAction(nameof(Details), new { id = toUpdate.Id });
-        }
+			_dbContext.Vacancies.Update(toUpdate);
+			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success("Vacancie was edited succesfully");
+			return RedirectToAction(nameof(Details), new { id = toUpdate.Id });
+		}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Policy = Constants.CompanyPolicy)]
-        public async Task<IActionResult> Delete(int id)
-        {
-            Vacancie toDelete = await _dbContext.Vacancies
-                .Include(v => v.Company)
-                .FirstOrDefaultAsync(v => v.Id == id);
-            if (toDelete == null)
-            {
-                return NotFound();
-            }
-            if (!_vacancieService.UserHasAccessTo(User, toDelete))
-            {
-                return Forbid();
-            }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize(Policy = Constants.CompanyPolicy)]
+		public async Task<IActionResult> Delete(int id)
+		{
+			Vacancie toDelete = await _dbContext.Vacancies
+				.Include(v => v.Company)
+				.FirstOrDefaultAsync(v => v.Id == id);
+			if (toDelete == null)
+			{
+				return NotFound();
+			}
+			if (! await _vacancieService.UserHasAccessTo(User, toDelete))
+			{
+				return Forbid();
+			}
 
-            _dbContext.Vacancies.Remove(toDelete);
-            await _dbContext.SaveChangesAsync();
-            TempData.Toaster().Success("Vacancie was deleted successfully");
-            return RedirectToAction(nameof(Index));
-        }
-    }
+			_dbContext.Vacancies.Remove(toDelete);
+			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success("Vacancie was deleted successfully");
+			return RedirectToAction(nameof(Index));
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize(Policy = Constants.JobseekerPolicy)]
+		public async Task<IActionResult> Respond(VacancieDetailsVm viewModel)
+		{
+			Vacancie vacancie = await _dbContext.Vacancies.AsNoTracking()
+				.FirstOrDefaultAsync(v => v.Id == viewModel.Vacancie.Id);
+			if (vacancie == null)
+			{
+				return NotFound();
+			}
+			Resume resume = await _dbContext.Resumes.AsNoTracking()
+				.FirstOrDefaultAsync(r => r.Id == viewModel.SelectedResumeId);
+			if (resume == null)
+			{
+				return NotFound();
+			}
+			if (! await _resumeService.UserHasAccessTo(User, resume))
+			{
+				return Forbid();
+			}
+
+			VacancieRespond vacancieRespond = await _dbContext.VacancieResponds.AsNoTracking()
+				.FirstOrDefaultAsync(r => r.ResumeId == resume.Id && r.VacancieId == vacancie.Id);
+			//If relation already exist, i.e. vacancie has been already responded by this resume
+			if (vacancieRespond != null)
+			{
+				TempData.Toaster().Warning("You've already responded to this vacancie");
+				return RedirectToAction(nameof(Details), new { id = vacancie.Id });
+			}
+
+			vacancieRespond = new VacancieRespond()
+			{
+				ResumeId = resume.Id,
+				VacancieId = vacancie.Id,
+			};
+			_dbContext.VacancieResponds.Add(vacancieRespond);
+			await _dbContext.SaveChangesAsync();
+			TempData.Toaster().Success("Responded to vacancie successfully");
+			return RedirectToAction(nameof(Details), new { id = vacancie.Id });
+		}
+	}
 }

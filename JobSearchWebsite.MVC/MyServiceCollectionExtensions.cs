@@ -37,8 +37,8 @@ namespace JobSearchWebsite.MVC
             return services.AddScoped<IValidator<BaseNamedEntity>, BaseNamedEntityValidator>()
                 .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>()
                 .AddScoped<IValidator<Vacancie>, VacancieValidator>()
-                .AddScoped<IValidator<VacancieDetailsVm>, VacancieDetailsVmValidator>()
-                .AddScoped<IValidator<ResumeDetailsVm>, ResumeDetailsVmValidator>();
+                .AddScoped<IValidator<VacancieUpsertVm>, VacancieUpsertVmValidator>()
+                .AddScoped<IValidator<ResumeUpsertVm>, ResumeUpsertVmValidator>();
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)

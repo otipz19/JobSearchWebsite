@@ -3,9 +3,9 @@ using Utility.ViewModels;
 
 namespace Utility.Validators
 {
-	public class VacancieDetailsVmValidator : AbstractValidator<VacancieDetailsVm>
+	public class VacancieUpsertVmValidator : AbstractValidator<VacancieUpsertVm>
 	{
-        public VacancieDetailsVmValidator()
+        public VacancieUpsertVmValidator()
         {
 			RuleFor(v => v.Name)
 			   .NotEmpty()

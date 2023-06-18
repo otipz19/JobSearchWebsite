@@ -28,12 +28,17 @@ namespace Utility.Services.BaseFilterableEntityServices
             }).ToList();
         }
 
-        public bool UserHasAccessTo(ClaimsPrincipal user, Vacancie vacancie)
+        public async Task<bool> UserHasAccessTo(ClaimsPrincipal user, Vacancie vacancie)
         {
-            return user.FindFirstValue(ClaimTypes.NameIdentifier) == Guard.Against.Null(vacancie.Company).AppUserId;
+            if(vacancie.Company == null)
+            {
+                vacancie.Company = await _dbContext.Companies.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == vacancie.CompanyId);
+            }
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) == vacancie.Company.AppUserId;
         }
 
-        public async Task<Vacancie> MapViewModelToEntity(VacancieDetailsVm viewModel, Vacancie vacancie = null)
+        public async Task<Vacancie> MapViewModelToEntity(VacancieUpsertVm viewModel, Vacancie vacancie = null)
         {
             if (vacancie == null)
             {
@@ -64,9 +69,9 @@ namespace Utility.Services.BaseFilterableEntityServices
             return vacancie;
         }
 
-        public async Task<VacancieDetailsVm> MapEntityToViewModel(Vacancie vacancie)
+        public async Task<VacancieUpsertVm> MapEntityToViewModel(Vacancie vacancie)
         {
-            var viewModel = new VacancieDetailsVm()
+            var viewModel = new VacancieUpsertVm()
             {
                 Name = vacancie.Name,
                 Description = vacancie.Description,
@@ -84,7 +89,7 @@ namespace Utility.Services.BaseFilterableEntityServices
             return viewModel;
         }
 
-        public async Task PopulateVmOnValidationFail(VacancieDetailsVm viewModel)
+        public async Task PopulateVmOnValidationFail(VacancieUpsertVm viewModel)
         {
             await PopulateVM(viewModel);
             SetCheckboxesInVM(viewModel,
@@ -94,14 +99,14 @@ namespace Utility.Services.BaseFilterableEntityServices
                 int.Parse);
         }
 
-        public async Task<VacancieDetailsVm> GetNewVacancieDetailsVm()
+        public async Task<VacancieUpsertVm> GetNewVacancieUpsertVm()
         {
-            VacancieDetailsVm viewModel = new VacancieDetailsVm();
+            VacancieUpsertVm viewModel = new VacancieUpsertVm();
             await PopulateVM(viewModel);
             return viewModel;
         }
 
-        private async Task PopulateVM(VacancieDetailsVm viewModel)
+        private async Task PopulateVM(VacancieUpsertVm viewModel)
         {
             await AddCheckboxOptionsToVM(viewModel);
             viewModel.AvailableExperienceLevels = await _dbContext.ExperienceLevels.ToListAsync();
@@ -111,14 +116,14 @@ namespace Utility.Services.BaseFilterableEntityServices
             viewModel.AvailableSpheres = await _dbContext.Spheres.ToListAsync();
         }
 
-        private async Task AddCheckboxOptionsToVM(VacancieDetailsVm viewModel)
+        private async Task AddCheckboxOptionsToVM(VacancieUpsertVm viewModel)
         {
             viewModel.CheckboxKeywords = await MapCheckboxOptions(_dbContext.Keywords);
             viewModel.CheckboxStates = await MapCheckboxOptions(_dbContext.States);
             viewModel.CheckboxCities = await MapCheckboxOptions(_dbContext.Cities);
         }
 
-        private void SetCheckboxesInVM<T>(VacancieDetailsVm viewModel,
+        private void SetCheckboxesInVM<T>(VacancieUpsertVm viewModel,
             IEnumerable<T> keywords,
             IEnumerable<T> states,
             IEnumerable<T> cities,
@@ -130,7 +135,7 @@ namespace Utility.Services.BaseFilterableEntityServices
                 cities.Select(selector));
         }
 
-        private void SetCheckboxesInVM(VacancieDetailsVm viewModel,
+        private void SetCheckboxesInVM(VacancieUpsertVm viewModel,
             IEnumerable<int> keywordsId,
             IEnumerable<int> statesId,
             IEnumerable<int> citiesId)

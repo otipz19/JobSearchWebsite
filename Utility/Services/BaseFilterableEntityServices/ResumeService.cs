@@ -27,16 +27,16 @@ namespace Utility.Services.BaseFilterableEntityServices
             }).ToList();
         }
 
-        public async Task<ResumeDetailsVm> GetNewResumeDetailsVm()
+        public async Task<ResumeUpsertVm> GetNewResumeUpsertVm()
         {
-            ResumeDetailsVm viewModel = new ResumeDetailsVm();
+            ResumeUpsertVm viewModel = new ResumeUpsertVm();
             await PopulateVM(viewModel);
             return viewModel;
         }
 
-        public async Task<ResumeDetailsVm> MapEntityToViewModel(Resume resume)
+        public async Task<ResumeUpsertVm> MapEntityToViewModel(Resume resume)
         {
-            ResumeDetailsVm viewModel = new ResumeDetailsVm()
+            ResumeUpsertVm viewModel = new ResumeUpsertVm()
             {
                 Name = resume.Name,
                 Description = resume.Description,
@@ -55,7 +55,7 @@ namespace Utility.Services.BaseFilterableEntityServices
             return viewModel;
         }
 
-        public async Task<Resume> MapViewModelToEntity(ResumeDetailsVm viewModel, Resume resume = null)
+        public async Task<Resume> MapViewModelToEntity(ResumeUpsertVm viewModel, Resume resume = null)
         {
             if (resume == null)
                 resume = new Resume();
@@ -79,7 +79,7 @@ namespace Utility.Services.BaseFilterableEntityServices
             return resume;
         }
 
-        public async Task PopulateVmOnValidationFail(ResumeDetailsVm viewModel)
+        public async Task PopulateVmOnValidationFail(ResumeUpsertVm viewModel)
         {
             await PopulateVM(viewModel);
             SetCheckboxesInVM(viewModel,
@@ -87,12 +87,17 @@ namespace Utility.Services.BaseFilterableEntityServices
                 int.Parse);
         }
 
-        public bool UserHasAccessTo(ClaimsPrincipal user, Resume resume)
+        public async Task<bool> UserHasAccessTo(ClaimsPrincipal user, Resume resume)
         {
-            return user.FindFirstValue(ClaimTypes.NameIdentifier) == Guard.Against.Null(resume.Jobseeker).AppUserId;
+            if(resume.Jobseeker == null)
+            {
+                resume.Jobseeker = await _dbContext.Jobseekers.AsNoTracking()
+                    .FirstOrDefaultAsync(j => j.Id == resume.JobseekerId);
+            }
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) == resume.Jobseeker.AppUserId;
         }
 
-        private async Task PopulateVM(ResumeDetailsVm viewModel)
+        private async Task PopulateVM(ResumeUpsertVm viewModel)
         {
             await AddCheckboxOptionsToVM(viewModel);
             viewModel.AvailableExperienceLevels = await _dbContext.ExperienceLevels.ToListAsync();
@@ -104,12 +109,12 @@ namespace Utility.Services.BaseFilterableEntityServices
             viewModel.AvailableStates = await _dbContext.States.ToListAsync();
         }
 
-        private async Task AddCheckboxOptionsToVM(ResumeDetailsVm viewModel)
+        private async Task AddCheckboxOptionsToVM(ResumeUpsertVm viewModel)
         {
             viewModel.CheckboxKeywords = await MapCheckboxOptions(_dbContext.Keywords);
         }
 
-        private void SetCheckboxesInVM<T>(ResumeDetailsVm viewModel,
+        private void SetCheckboxesInVM<T>(ResumeUpsertVm viewModel,
             IEnumerable<T> keywords,
             Func<T, int> selector)
         {
@@ -117,7 +122,7 @@ namespace Utility.Services.BaseFilterableEntityServices
                 keywords.Select(selector));
         }
 
-        private void SetCheckboxesInVM(ResumeDetailsVm viewModel,
+        private void SetCheckboxesInVM(ResumeUpsertVm viewModel,
             IEnumerable<int> keywordsId)
         {
             foreach (int id in keywordsId)

@@ -1,8 +1,5 @@
 ﻿namespace Data.Entities
 {
-	/// <summary>
-	/// Represents respond to vacancie
-	/// </summary>
 	public class VacancieRespond
 	{
         public int VacancieId { get; set; }
