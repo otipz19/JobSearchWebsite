@@ -20,6 +20,9 @@ namespace Data
 		public DbSet<Resume> Resumes { get; set; }
         public DbSet<Vacancie> Vacancies { get; set; }
 
+        public DbSet<JobOffer> JobOffers { get; set; }
+        public DbSet<VacancieRespond> VacancieResponds { get; set; }
+
         public DbSet<City> Cities { get; set; }
         public DbSet<EnglishLevel> EnglishLevels { get; set; }
         public DbSet<ExperienceLevel> ExperienceLevels { get; set; }

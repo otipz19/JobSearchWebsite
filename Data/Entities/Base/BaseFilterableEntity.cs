@@ -28,5 +28,9 @@ namespace Data.Entities.Base
 		public int EnglishLevelId { get; set; }
 
 		public virtual EnglishLevel EnglishLevel { get; set; }
+
+		public virtual List<VacancieRespond> VacancieResponds { get; set; } = new();
+
+		public virtual List<JobOffer> JobOffers { get; set; } = new();
 	}
 }

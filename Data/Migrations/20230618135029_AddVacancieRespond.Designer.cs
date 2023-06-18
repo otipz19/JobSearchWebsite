@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JobSearchWebsite.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230618135029_AddVacancieRespond")]
+    partial class AddVacancieRespond
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,34 +138,6 @@ namespace JobSearchWebsite.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExperienceLevels");
-                });
-
-            modelBuilder.Entity("Data.Entities.JobOffer", b =>
-                {
-                    b.Property<int>("ResumeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("VacancieId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ResumeId", "CompanyId");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("VacancieId");
-
-                    b.ToTable("JobOffers");
                 });
 
             modelBuilder.Entity("Data.Entities.Jobseeker", b =>
@@ -317,7 +292,7 @@ namespace JobSearchWebsite.Data.Migrations
                             t.HasTrigger("LC_TRIGGER_AFTER_DELETE_RESUME");
                         });
 
-                    b.HasAnnotation("LC_TRIGGER_AFTER_DELETE_RESUME", "CREATE TRIGGER LC_TRIGGER_AFTER_DELETE_RESUME ON \"Resumes\" AFTER Delete AS\r\nBEGIN\r\n  DECLARE @OldId INT\r\n  DECLARE DeletedResumeCursor CURSOR LOCAL FOR SELECT Id FROM Deleted\r\n  OPEN DeletedResumeCursor\r\n  FETCH NEXT FROM DeletedResumeCursor INTO @OldId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    DELETE FROM \"VacancieResponds\"\r\n    WHERE @OldId = \"VacancieResponds\".\"ResumeId\";\r\n    DELETE FROM \"JobOffers\"\r\n    WHERE @OldId = \"JobOffers\".\"ResumeId\";\r\n  FETCH NEXT FROM DeletedResumeCursor INTO @OldId\r\n  END\r\n  CLOSE DeletedResumeCursor DEALLOCATE DeletedResumeCursor\r\nEND");
+                    b.HasAnnotation("LC_TRIGGER_AFTER_DELETE_RESUME", "CREATE TRIGGER LC_TRIGGER_AFTER_DELETE_RESUME ON \"Resumes\" AFTER Delete AS\r\nBEGIN\r\n  DECLARE @OldId INT\r\n  DECLARE DeletedResumeCursor CURSOR LOCAL FOR SELECT Id FROM Deleted\r\n  OPEN DeletedResumeCursor\r\n  FETCH NEXT FROM DeletedResumeCursor INTO @OldId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    DELETE FROM \"VacancieRespond\"\r\n    WHERE @OldId = \"VacancieRespond\".\"ResumeId\";\r\n  FETCH NEXT FROM DeletedResumeCursor INTO @OldId\r\n  END\r\n  CLOSE DeletedResumeCursor DEALLOCATE DeletedResumeCursor\r\nEND");
                 });
 
             modelBuilder.Entity("Data.Entities.Specialization", b =>
@@ -450,7 +425,7 @@ namespace JobSearchWebsite.Data.Migrations
                             t.HasTrigger("LC_TRIGGER_AFTER_DELETE_VACANCIE");
                         });
 
-                    b.HasAnnotation("LC_TRIGGER_AFTER_DELETE_VACANCIE", "CREATE TRIGGER LC_TRIGGER_AFTER_DELETE_VACANCIE ON \"Vacancies\" AFTER Delete AS\r\nBEGIN\r\n  DECLARE @OldId INT\r\n  DECLARE DeletedVacancieCursor CURSOR LOCAL FOR SELECT Id FROM Deleted\r\n  OPEN DeletedVacancieCursor\r\n  FETCH NEXT FROM DeletedVacancieCursor INTO @OldId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    DELETE FROM \"VacancieResponds\"\r\n    WHERE @OldId = \"VacancieResponds\".\"VacancieId\";\r\n    UPDATE \"JobOffers\"\r\n    SET \"VacancieId\" = NULL\r\n    WHERE @OldId = \"JobOffers\".\"VacancieId\";\r\n  FETCH NEXT FROM DeletedVacancieCursor INTO @OldId\r\n  END\r\n  CLOSE DeletedVacancieCursor DEALLOCATE DeletedVacancieCursor\r\nEND");
+                    b.HasAnnotation("LC_TRIGGER_AFTER_DELETE_VACANCIE", "CREATE TRIGGER LC_TRIGGER_AFTER_DELETE_VACANCIE ON \"Vacancies\" AFTER Delete AS\r\nBEGIN\r\n  DECLARE @OldId INT\r\n  DECLARE DeletedVacancieCursor CURSOR LOCAL FOR SELECT Id FROM Deleted\r\n  OPEN DeletedVacancieCursor\r\n  FETCH NEXT FROM DeletedVacancieCursor INTO @OldId\r\n  WHILE @@FETCH_STATUS = 0\r\n  BEGIN\r\n    DELETE FROM \"VacancieRespond\"\r\n    WHERE @OldId = \"VacancieRespond\".\"VacancieId\";\r\n  FETCH NEXT FROM DeletedVacancieCursor INTO @OldId\r\n  END\r\n  CLOSE DeletedVacancieCursor DEALLOCATE DeletedVacancieCursor\r\nEND");
                 });
 
             modelBuilder.Entity("Data.Entities.VacancieRespond", b =>
@@ -470,7 +445,7 @@ namespace JobSearchWebsite.Data.Migrations
 
                     b.HasIndex("VacancieId");
 
-                    b.ToTable("VacancieResponds");
+                    b.ToTable("VacancieRespond");
                 });
 
             modelBuilder.Entity("KeywordResume", b =>
@@ -757,32 +732,6 @@ namespace JobSearchWebsite.Data.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("Data.Entities.JobOffer", b =>
-                {
-                    b.HasOne("Data.Entities.Company", "Company")
-                        .WithMany("JobOffers")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.Resume", "Resume")
-                        .WithMany("JobOffers")
-                        .HasForeignKey("ResumeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.Vacancie", "Vacancie")
-                        .WithMany("JobOffers")
-                        .HasForeignKey("VacancieId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Resume");
-
-                    b.Navigation("Vacancie");
-                });
-
             modelBuilder.Entity("Data.Entities.Jobseeker", b =>
                 {
                     b.HasOne("Data.Entities.AppUser", "AppUser")
@@ -1029,8 +978,6 @@ namespace JobSearchWebsite.Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Company", b =>
                 {
-                    b.Navigation("JobOffers");
-
                     b.Navigation("Vacancies");
                 });
 
@@ -1041,15 +988,11 @@ namespace JobSearchWebsite.Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Resume", b =>
                 {
-                    b.Navigation("JobOffers");
-
                     b.Navigation("VacancieResponds");
                 });
 
             modelBuilder.Entity("Data.Entities.Vacancie", b =>
                 {
-                    b.Navigation("JobOffers");
-
                     b.Navigation("VacancieResponds");
                 });
 #pragma warning restore 612, 618

@@ -17,6 +17,7 @@ using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.Services.BaseFilterableEntityServices;
 using Utility.Interfaces.FileUpload.Document;
 using Utility.Services.FileUpload.Document;
+using Laraue.EfCoreTriggers.SqlServer.Extensions;
 
 namespace JobSearchWebsite.MVC
 {
@@ -26,7 +27,8 @@ namespace JobSearchWebsite.MVC
         {
             return services.AddDbContext<AppDbContext>(optionsBuilder =>
             {
-                optionsBuilder.UseSqlServer(configuration.GetConnectionString("Localhost"));
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("Localhost"))
+                    .UseSqlServerTriggers();
             });
         }
 
