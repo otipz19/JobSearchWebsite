@@ -13,9 +13,14 @@
         <div class="col-4">
             @if(User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Company.AppUserId)
             {
-                <a class="btn btn-outline-primary" asp-action="Edit">
-                    Edit your profile
-                </a>
+                <div class="d-flex flex-row justify-content-end">
+                    <a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="Index">
+                        Responds
+                    </a>
+                    <a class="btn btn-outline-primary ms-3" asp-action="Edit">
+                        Edit your profile
+                    </a>
+                </div>
             }
         </div>          
     </div>

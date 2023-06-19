@@ -13,7 +13,10 @@
 		@if(Model.Jobseeker.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
 		{
 			<div class="col-sm-6 d-flex justify-content-end align-items-center">
-				<a class="btn btn-outline-primary" asp-action="Update" asp-route-id="@Model.Id">Edit your resume</a>
+				<a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="RespondsOfResume" asp-route-id="@Model.Id">
+					Responds
+				</a>
+				<a class="btn btn-outline-primary ms-3" asp-action="Update" asp-route-id="@Model.Id">Edit your resume</a>
 				<!-- Button trigger modal -->
 				<button type="button" class="btn btn-outline-danger ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
 					Delete

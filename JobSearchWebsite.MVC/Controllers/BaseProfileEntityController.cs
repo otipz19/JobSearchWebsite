@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.Entities;
 using Data.Entities.Base;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -42,6 +43,17 @@ namespace JobSearchWebsite.MVC.Controllers
                 return NotFound();
             }
             return View(profile);
+        }
+
+        public async Task<IActionResult> MyProfile()
+        {
+            T profile = await _dbContext.Set<T>().AsNoTracking()
+                .FirstOrDefaultAsync(p => p.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (profile == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Details), new { id = profile.Id });
         }
 
         [HttpGet]

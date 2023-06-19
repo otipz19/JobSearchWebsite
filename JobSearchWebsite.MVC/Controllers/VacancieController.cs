@@ -55,7 +55,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				Vacancie = vacancie
 			};
-			if (User.IsInRole(AppUserRoleType.Jobseeker.ToString()))
+			if (User.IsJobseeker())
 			{
 				var jobseeker = await _dbContext.Jobseekers.AsNoTracking()
 					.FirstOrDefaultAsync(j => j.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));

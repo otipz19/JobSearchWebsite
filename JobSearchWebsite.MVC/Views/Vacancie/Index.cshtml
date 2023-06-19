@@ -10,7 +10,7 @@
         <div class="col-sm-6">
             <h3 class="display-3">Vacancies List</h3>
         </div>
-        @if (User.IsInRole(AppUserRoleType.Company.ToString()))
+        @if (User.IsCompany())
         {
             <div class="col-sm-6 d-flex justify-content-end align-items-center">
                 <a asp-action="Create" class="btn btn-outline-primary">

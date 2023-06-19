@@ -1,4 +1,7 @@
 ﻿@using Data.Enums;
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,6 +50,19 @@
                             </li>
                         }
                     </ul>
+                    @if(User.IsCompany() || User.IsJobseeker())
+                    {
+                        <div class="d-flex flex-row justify-content-end">
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    @{
+                                        string controller = User.IsCompany() ? "Company" : "Jobseeker";
+                                    }
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="@controller" asp-action="MyProfile">My Profile</a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
                 </div>
                 <partial name="_LoginPartial" />
             </div>

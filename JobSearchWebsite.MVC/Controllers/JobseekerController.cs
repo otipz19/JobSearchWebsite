@@ -19,7 +19,7 @@ namespace JobSearchWebsite.MVC.Controllers
 
         [HttpGet]
         [Authorize(Policy = Constants.JobseekerPolicy)]
-        public new Task<IActionResult> Edit()
+        public override Task<IActionResult> Edit()
         {
             return base.Edit();
         }
@@ -27,7 +27,7 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = Constants.JobseekerPolicy)]
-        public new Task<IActionResult> Edit(Jobseeker profile)
+        public override Task<IActionResult> Edit(Jobseeker profile)
         {
             return base.Edit(profile);
         }

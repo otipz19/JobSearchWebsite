@@ -1,0 +1,79 @@
+﻿@model Utility.ViewModels.VacancieRespondIndexVm
+@using Data.Enums
+@{
+	ViewData["Title"] = "Details";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="display-3">Vacancie respond</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="d-flex flex-row w-100 justify-content-between">
+                    <div class="">
+                        <label>Vacancie: </label>
+                        <a asp-controller="Vacancie" asp-action="Details" asp-route-Id="@Model.VacancieRespond.Vacancie.Id">@Model.VacancieRespond.Vacancie.Name</a>
+                    </div>
+                        <div>
+                        @{
+                            string badgeStyle = Model.VacancieRespond.Status switch
+                            {
+                                VacancieRespondStatus.Accepted => "bg-success",
+                                VacancieRespondStatus.Rejected => "bg-danger",
+                                _ => "bg-primary",
+                            };
+                        }
+                        <span class="badge @badgeStyle">@Model.VacancieRespond.Status.ToString()</span>
+                        </div>   
+                </div>
+
+                <div class="d-flex flex-row w-100 justify-content-between">
+                    <div class="">
+                        <label>Resume: </label>
+                        <a class="muted" asp-controller="Resume" asp-action="Details" asp-route-Id="@Model.VacancieRespond.Resume.Id">@Model.VacancieRespond.Resume.Name</a>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row w-100 justify-content-between align-items-end"> 
+                    <div class="d-flex flex-column justify-content-between">
+                        <small>@Model.SentAgo</small>
+                        @if (Model.VacancieRespond.Status != VacancieRespondStatus.Pending)
+                        {
+                            <small>@Model.AnsweredAgo</small>
+                        }
+                    </div>
+                    <div class="d-flex flex-row justify-content-end">
+                        @if (User.IsCompany() && Model.VacancieRespond.Status == VacancieRespondStatus.Pending)
+                        {
+                            <form method="post" asp-action="ChangeStatus">
+                                <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
+                                <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
+                                <input hidden asp-for="@Model.VacancieRespond.Status" value="@VacancieRespondStatus.Accepted" />
+                                <button type="submit" class="btn btn-outline-success ms-3">Accept</button>
+                            </form>
+                            <form method="post" asp-action="ChangeStatus">
+                                <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
+                                <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
+                                <input hidden asp-for="@Model.VacancieRespond.Status" value="@VacancieRespondStatus.Rejected" />
+                                <button type="submit" class="btn btn-outline-danger ms-3">Reject</button>
+                            </form>
+                        }
+                        else if (User.IsJobseeker())
+                        {
+                            <form method="post" asp-action="Delete">
+                                <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
+                                <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
+                                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                            </form>
+                        }
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -9,6 +9,7 @@ using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.Interfaces.Responds;
 using Utility.Toaster;
 using Utility.Utilities;
+using Utility.ViewModels;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -37,11 +38,11 @@ namespace JobSearchWebsite.MVC.Controllers
 		{
 			IEnumerable<VacancieRespond> responds;
 
-			if (User.IsInRole(AppUserRoleType.Jobseeker.ToString()))
+			if (User.IsJobseeker())
 			{
 				responds = await _vacancieRespondService.GetVacancieRespondsForJobseeker(User);
 			}
-			else if (User.IsInRole(AppUserRoleType.Company.ToString()))
+			else if (User.IsCompany())
 			{
 				responds = await _vacancieRespondService.GetVacancieRespondsForCompany(User);
 			}
@@ -50,7 +51,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			return View(responds);
+			return View(_vacancieRespondService.GetIndexVmList(responds));
 		}
 
 		[HttpGet]
@@ -71,7 +72,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				return Forbid();
 			}
-			return View(respond);
+			return View(_vacancieRespondService.GetIndexVm(respond));
 		}
 
 		[HttpGet]
@@ -80,6 +81,7 @@ namespace JobSearchWebsite.MVC.Controllers
 		{
 			Resume resume = await _dbContext.Resumes.AsNoTracking()
 				.Include(r => r.VacancieResponds)
+					.ThenInclude(respond => respond.Vacancie)
 				.FirstOrDefaultAsync(r => r.Id == id);
 			if(resume == null)
 			{
@@ -90,7 +92,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			return View(resume.VacancieResponds);
+			return View(_vacancieRespondService.GetIndexVmList(resume.VacancieResponds));
 		}
 
 		[HttpGet]
@@ -99,6 +101,7 @@ namespace JobSearchWebsite.MVC.Controllers
 		{
 			Vacancie vacancie = await _dbContext.Vacancies.AsNoTracking()
 				.Include(v => v.VacancieResponds)
+					.ThenInclude(respond => respond.Resume)
 				.FirstOrDefaultAsync(v => v.Id == id);
 			if (vacancie == null)
 			{
@@ -109,7 +112,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			return View(vacancie.VacancieResponds);
+			return View(_vacancieRespondService.GetIndexVmList(vacancie.VacancieResponds));
 		}
 
 		/// <summary>
@@ -118,14 +121,19 @@ namespace JobSearchWebsite.MVC.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Policy = Constants.JobseekerPolicy)]
-		public async Task<IActionResult> Delete(int resumeId, int vacancieId)
+		public async Task<IActionResult> Delete(VacancieRespondIndexVm fromRequest)
 		{
-			Resume resume = await _dbContext.Resumes
-				.Include(r => r.VacancieResponds
-					.Where(respond => respond.ResumeId == r.Id && respond.VacancieId == vacancieId))
-				.FirstOrDefaultAsync(r => r.Id == resumeId);
+			//Resume resume = await _dbContext.Resumes
+			//	.Include(r => r.VacancieResponds
+			//		.Where(respond => respond.ResumeId == r.Id && respond.VacancieId == fromRequest.VacancieId))
+			//	.FirstOrDefaultAsync(r => r.Id == fromRequest.ResumeId);
 
-			if (resume == null || resume.VacancieResponds.FirstOrDefault() == null)
+			Resume resume = await _dbContext.Resumes.AsNoTracking()
+				.FirstOrDefaultAsync(r => r.Id == fromRequest.VacancieRespond.ResumeId);
+			VacancieRespond respond = await _dbContext.VacancieResponds
+				.FirstOrDefaultAsync(r => r.VacancieId == fromRequest.VacancieRespond.VacancieId && r.ResumeId == resume.Id);
+
+			if (resume == null || respond == null)
 			{
 				return NotFound();
 			}
@@ -134,7 +142,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			_dbContext.VacancieResponds.Remove(resume.VacancieResponds.First());
+			_dbContext.VacancieResponds.Remove(respond);
 			await _dbContext.SaveChangesAsync();
 			TempData.Toaster().Success("Vacancie respond was deleted");
 			return RedirectToAction(nameof(Index));
@@ -143,12 +151,13 @@ namespace JobSearchWebsite.MVC.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Policy = Constants.CompanyPolicy)]
-		public async Task<IActionResult> Accept(int resumeId, int vacancieId)
+		public async Task<IActionResult> ChangeStatus(VacancieRespondIndexVm fromRequest)
 		{
 			VacancieRespond respond;
 			try
 			{
-				respond = await _vacancieRespondService.GetVacancieRespondForCompany(User, resumeId, vacancieId);
+				respond = await _vacancieRespondService
+					.GetVacancieRespondForCompany(User, fromRequest.VacancieRespond.ResumeId, fromRequest.VacancieRespond.VacancieId);
 			}
 			catch(NoAccessException)
 			{
@@ -161,47 +170,15 @@ namespace JobSearchWebsite.MVC.Controllers
 
 			try
 			{
-				await _vacancieRespondService.ChangeStatus(respond, VacancieRespondStatus.Accepted);
+				await _vacancieRespondService.ChangeStatus(respond, fromRequest.VacancieRespond.Status);
 			}
 			catch
 			{
 				TempData.Toaster().Error("This respond has been already considered");
-				return RedirectToAction(nameof(Details), new { resumeId, vacancieId });
+				return RedirectToAction(nameof(Details), new { respond.ResumeId, respond.VacancieId });
 			}
 
-			return RedirectToAction(nameof(Details), new { resumeId, vacancieId });
-		}
-
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		[Authorize(Policy = Constants.CompanyPolicy)]
-		public async Task<IActionResult> Reject(int resumeId, int vacancieId)
-		{
-			VacancieRespond respond;
-			try
-			{
-				respond = await _vacancieRespondService.GetVacancieRespondForCompany(User, resumeId, vacancieId);
-			}
-			catch (NoAccessException)
-			{
-				return Forbid();
-			}
-			catch
-			{
-				return NotFound();
-			}
-
-			try
-			{
-				await _vacancieRespondService.ChangeStatus(respond, VacancieRespondStatus.Rejected);
-			}
-			catch
-			{
-				TempData.Toaster().Error("This respond has been already considered");
-				return RedirectToAction(nameof(Details), new { resumeId, vacancieId });
-			}
-
-			return RedirectToAction(nameof(Details), new { resumeId, vacancieId });
+			return RedirectToAction(nameof(Details), new { respond.ResumeId, respond.VacancieId });
 		}
 	}
 }

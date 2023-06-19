@@ -9,6 +9,7 @@ using Utility.Interfaces.FileUpload.Image;
 using Microsoft.EntityFrameworkCore;
 using Utility.ViewModels;
 using Utility.Interfaces.BaseFilterableEntityServices;
+using System.Security.Claims;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -42,8 +43,10 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpGet]
         public override async Task<IActionResult> Details(int id)
         {
-            var company = await _dbContext.Companies.Include(c => c.Vacancies).FirstOrDefaultAsync(c => c.Id == id);
-            if(company == null)
+            var company = await _dbContext.Companies.AsNoTracking()
+                .Include(c => c.Vacancies)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (company == null)
             {
                 return NotFound();
             }

@@ -14,7 +14,10 @@
 		@if(Model.Vacancie.Company.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
 		{
 			<div class="col-sm-6 d-flex justify-content-end align-items-center">
-				<a class="btn btn-outline-primary" asp-action="Update" asp-route-id="@Model.Vacancie.Id">Edit your vacancie</a>
+				<a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="RespondsForVacancie" asp-route-id="@Model.Vacancie.Id">
+					Responds
+				</a>
+				<a class="btn btn-outline-primary ms-3" asp-action="Update" asp-route-id="@Model.Vacancie.Id">Edit your vacancie</a>
 				<!-- Button trigger modal -->
 				<button type="button" class="btn btn-outline-danger ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
 					Delete
@@ -128,7 +131,7 @@
 		</div>
 	</div>
 
-	@if (User.IsInRole(AppUserRoleType.Jobseeker.ToString()))
+	@if (User.IsJobseeker())
 	{
 		<div class="row justify-content-end">
 			<div class="col-sm-6">

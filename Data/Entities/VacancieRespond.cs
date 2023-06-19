@@ -15,5 +15,7 @@ namespace Data.Entities
         public DateTime CreatedAt { get; set; }
 
         public VacancieRespondStatus Status { get; set; }
+
+        public DateTime? StatusChangedAt { get; set; }
     }
 }

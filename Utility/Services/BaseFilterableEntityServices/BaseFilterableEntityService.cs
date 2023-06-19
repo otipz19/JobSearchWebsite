@@ -4,6 +4,7 @@ using Data.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text;
+using Utility.Utilities;
 using Utility.ViewModels;
 
 namespace Utility.Services.BaseFilterableEntityServices
@@ -53,17 +54,10 @@ namespace Utility.Services.BaseFilterableEntityServices
 
         protected string GetCreatedAgo(DateTime createdAt)
         {
-            TimeSpan createdAgo = DateTime.Now - createdAt;
-            string msg = "Created ";
-            if (createdAgo.Days > 0)
-                msg += $"{createdAgo.Days} days ago";
-            else if (createdAgo.Hours > 0)
-				msg += $"{createdAgo.Hours} hours ago";
-            else if (createdAgo.Minutes > 0)
-				msg += $"{createdAgo.Minutes} minutes ago";
-            else
-                msg = "Just created";
-            return msg;
+            string str = createdAt.GetTimePassedString();
+            if (str == "")
+                return "Just created";
+            return "Created" + str;
         }
 
         protected async Task<int> GetForeignKey<T>(int sourceId)

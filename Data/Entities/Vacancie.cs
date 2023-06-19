@@ -1,6 +1,4 @@
 ﻿using Data.Entities.Base;
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities
 {

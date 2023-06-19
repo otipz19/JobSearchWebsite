@@ -1,5 +1,4 @@
 ﻿using Ardalis.GuardClauses;
-using Azure;
 using Data;
 using Data.Entities;
 using Data.Enums;
@@ -8,6 +7,9 @@ using System.Security.Claims;
 using Utility.Exceptions;
 using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.Interfaces.Responds;
+using Utility.ViewModels;
+using Utility.Utilities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Utility.Services.Responds
 {
@@ -46,6 +48,7 @@ namespace Utility.Services.Responds
 			Jobseeker jobseeker = await _dbContext.Jobseekers.AsNoTracking()
 					.Include(j => j.Resumes)
 						.ThenInclude(r => r.VacancieResponds)
+							.ThenInclude(respond => respond.Vacancie)
 					.FirstOrDefaultAsync(j => j.AppUserId == user.FindFirstValue(ClaimTypes.NameIdentifier));
 			Guard.Against.Null(jobseeker);
 			return jobseeker.Resumes.SelectMany(r => r.VacancieResponds).ToList();
@@ -56,6 +59,7 @@ namespace Utility.Services.Responds
 			Company company = await _dbContext.Companies.AsNoTracking()
 					.Include(c => c.Vacancies)
 						.ThenInclude(v => v.VacancieResponds)
+							.ThenInclude(respond => respond.Resume)
 					.FirstOrDefaultAsync(c => c.AppUserId == user.FindFirstValue(ClaimTypes.NameIdentifier));
 			Guard.Against.Null(company);
 			return company.Vacancies.SelectMany(v => v.VacancieResponds).ToList();
@@ -63,10 +67,16 @@ namespace Utility.Services.Responds
 
 		public async Task<VacancieRespond> GetVacancieRespondForCompany(ClaimsPrincipal user, int resumeId, int vacancieId)
 		{
-			Vacancie vacancie = await _dbContext.Vacancies
-				.Include(v => v.VacancieResponds
-					.Where(respond => respond.VacancieId == v.Id && respond.ResumeId == resumeId))
+			//Vacancie vacancie = await _dbContext.Vacancies
+			//	.Include(v => v.VacancieResponds
+			//		.Where(respond => respond.VacancieId == v.Id && respond.ResumeId == resumeId))
+			//	.FirstOrDefaultAsync(v => v.Id == vacancieId);
+
+			Vacancie vacancie = await _dbContext.Vacancies.AsNoTracking()
 				.FirstOrDefaultAsync(v => v.Id == vacancieId);
+			vacancie.VacancieResponds = await _dbContext.VacancieResponds
+				.Where(respond => respond.VacancieId == vacancie.Id && respond.ResumeId == resumeId)
+				.ToListAsync();
 
 			Guard.Against.Null(vacancie);
 			if(! await _vacancieService.UserHasAccessTo(user, vacancie))
@@ -84,8 +94,38 @@ namespace Utility.Services.Responds
 			}
 
 			respond.Status = status;
+			respond.StatusChangedAt = DateTime.Now;
 			_dbContext.VacancieResponds.Update(respond);
 			await _dbContext.SaveChangesAsync();
 		}
+
+		public List<VacancieRespondIndexVm> GetIndexVmList(IEnumerable<VacancieRespond> responds)
+		{
+			return responds.Select(GetIndexVm).ToList();
+		}
+
+		public VacancieRespondIndexVm GetIndexVm(VacancieRespond respond)
+		{
+			return new VacancieRespondIndexVm()
+			{
+				VacancieRespond = respond,
+				SentAgo = GetSentAgo(),
+				AnsweredAgo = GetAnsweredAgo(), 
+			};
+
+			string GetSentAgo()
+			{
+				var str = respond.CreatedAt.GetTimePassedString();
+                return str == "" ? "Just sent" : "Sent" + str;
+            }
+
+			string GetAnsweredAgo()
+			{
+				if (respond.StatusChangedAt is null)
+					return "";
+				var str = respond.StatusChangedAt.GetTimePassedString();
+				return str == "" ? "Just answered" : "Answered" + str;
+            }
+        }
 	}
 }
