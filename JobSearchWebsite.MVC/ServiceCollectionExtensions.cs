@@ -18,10 +18,12 @@ using Utility.Services.BaseFilterableEntityServices;
 using Utility.Interfaces.FileUpload.Document;
 using Utility.Services.FileUpload.Document;
 using Laraue.EfCoreTriggers.SqlServer.Extensions;
+using Utility.Interfaces.Responds;
+using Utility.Services.Responds;
 
 namespace JobSearchWebsite.MVC
 {
-    public static class MyServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddAppDbContext(this IServiceCollection services, IConfiguration configuration)
         {
@@ -67,7 +69,8 @@ namespace JobSearchWebsite.MVC
                 .AddScoped<IJobseekerImageService, JobseekerImageService>()
                 .AddScoped<IVacancieService, VacancieService>()
                 .AddScoped<IResumeService, ResumeService>()
-                .AddScoped<IResumeDocumentService, ResumeDocumentService>();
+                .AddScoped<IResumeDocumentService, ResumeDocumentService>()
+                .AddScoped<IVacancieRespondService, VacancieRespondService>();
         }
     }
 }

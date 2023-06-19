@@ -11,6 +11,7 @@ using Utility.Toaster;
 using Utility.Utilities;
 using Utility.Interfaces.BaseFilterableEntityServices;
 using Data.Enums;
+using Utility.Interfaces.Responds;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -20,16 +21,19 @@ namespace JobSearchWebsite.MVC.Controllers
 		private readonly IValidator<VacancieUpsertVm> _validator;
 		private readonly IVacancieService _vacancieService;
 		private readonly IResumeService _resumeService;
+		private readonly IVacancieRespondService _vacancieRespondService;
 
 		public VacancieController(AppDbContext dbContext,
 			IValidator<VacancieUpsertVm> validator,
 			IVacancieService vacancieService,
-			IResumeService resumeService)
+			IResumeService resumeService,
+			IVacancieRespondService vacancieRespondService)
 		{
 			_dbContext = dbContext;
 			_validator = validator;
 			_vacancieService = vacancieService;
 			_resumeService = resumeService;
+			_vacancieRespondService = vacancieRespondService;
 		}
 
 		[HttpGet]
@@ -209,22 +213,16 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			VacancieRespond vacancieRespond = await _dbContext.VacancieResponds.AsNoTracking()
-				.FirstOrDefaultAsync(r => r.ResumeId == resume.Id && r.VacancieId == vacancie.Id);
-			//If relation already exist, i.e. vacancie has been already responded by this resume
-			if (vacancieRespond != null)
+			try
+			{
+				await _vacancieRespondService.CreateVacancieRespond(resume.Id, vacancie.Id);
+			}
+			catch
 			{
 				TempData.Toaster().Warning("You've already responded to this vacancie");
 				return RedirectToAction(nameof(Details), new { id = vacancie.Id });
 			}
 
-			vacancieRespond = new VacancieRespond()
-			{
-				ResumeId = resume.Id,
-				VacancieId = vacancie.Id,
-			};
-			_dbContext.VacancieResponds.Add(vacancieRespond);
-			await _dbContext.SaveChangesAsync();
 			TempData.Toaster().Success("Responded to vacancie successfully");
 			return RedirectToAction(nameof(Details), new { id = vacancie.Id });
 		}

@@ -1,4 +1,6 @@
-﻿namespace Data.Entities
+﻿using Data.Enums;
+
+namespace Data.Entities
 {
 	public class VacancieRespond
 	{
@@ -11,5 +13,7 @@
         public virtual Resume Resume { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public VacancieRespondStatus Status { get; set; }
     }
 }
