@@ -1,4 +1,6 @@
-﻿namespace Data.Entities
+﻿using Data.Enums;
+
+namespace Data.Entities
 {
 	public class JobOffer
 	{
@@ -17,5 +19,9 @@
         public string Message { get; set; }
 
         public DateTime CreatedAt { get; set; }
-	}
+
+        public RespondStatus Status { get; set; }
+
+        public DateTime? StatusChangedAt { get; set; }
+    }
 }

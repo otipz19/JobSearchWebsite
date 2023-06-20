@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.Entities.Base;
+using System.Security.Claims;
 
 namespace Utility.Interfaces.Profile
 {
@@ -7,5 +8,9 @@ namespace Utility.Interfaces.Profile
         where T : BaseProfileEntity
     {
         public Task<T> CreateProfile(AppUser user);
+
+        public Task<bool> UserOwnsProfile(ClaimsPrincipal user, T profile);
+
+        public Task<T> GetUserProfile(ClaimsPrincipal user);
     }
 }

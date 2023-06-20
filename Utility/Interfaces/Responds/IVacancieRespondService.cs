@@ -20,7 +20,7 @@ namespace Utility.Interfaces.Responds
 		public Task<VacancieRespond> GetVacancieRespondForCompany(ClaimsPrincipal user, int resumeId, int vacancieId);
 
 		/// <exception cref="ArgumentException"></exception>
-		public Task ChangeStatus(VacancieRespond respond, VacancieRespondStatus status);
+		public Task ChangeStatus(VacancieRespond respond, RespondStatus status);
 
 		public List<VacancieRespondIndexVm> GetIndexVmList(IEnumerable<VacancieRespond> responds);
 

@@ -67,18 +67,15 @@ namespace Utility.Services.Responds
 
 		public async Task<VacancieRespond> GetVacancieRespondForCompany(ClaimsPrincipal user, int resumeId, int vacancieId)
 		{
-			//Vacancie vacancie = await _dbContext.Vacancies
-			//	.Include(v => v.VacancieResponds
-			//		.Where(respond => respond.VacancieId == v.Id && respond.ResumeId == resumeId))
-			//	.FirstOrDefaultAsync(v => v.Id == vacancieId);
-
 			Vacancie vacancie = await _dbContext.Vacancies.AsNoTracking()
 				.FirstOrDefaultAsync(v => v.Id == vacancieId);
-			vacancie.VacancieResponds = await _dbContext.VacancieResponds
+
+            Guard.Against.Null(vacancie);
+
+            vacancie.VacancieResponds = await _dbContext.VacancieResponds
 				.Where(respond => respond.VacancieId == vacancie.Id && respond.ResumeId == resumeId)
 				.ToListAsync();
 
-			Guard.Against.Null(vacancie);
 			if(! await _vacancieService.UserHasAccessTo(user, vacancie))
 			{
 				throw new NoAccessException();
@@ -86,9 +83,9 @@ namespace Utility.Services.Responds
 			return Guard.Against.Null(vacancie.VacancieResponds.FirstOrDefault());
 		}
 
-		public async Task ChangeStatus(VacancieRespond respond, VacancieRespondStatus status)
+		public async Task ChangeStatus(VacancieRespond respond, RespondStatus status)
 		{
-			if (respond.Status == VacancieRespondStatus.Accepted || respond.Status == VacancieRespondStatus.Rejected)
+			if (respond.Status == RespondStatus.Accepted || respond.Status == RespondStatus.Rejected)
 			{
 				throw new ArgumentException();
 			}

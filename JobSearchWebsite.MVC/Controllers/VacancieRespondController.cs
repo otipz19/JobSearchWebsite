@@ -33,29 +33,34 @@ namespace JobSearchWebsite.MVC.Controllers
 		}
 
 		[HttpGet]
-		[Authorize]
 		public async Task<IActionResult> Index()
 		{
 			IEnumerable<VacancieRespond> responds;
 
-			if (User.IsJobseeker())
+			try
 			{
-				responds = await _vacancieRespondService.GetVacancieRespondsForJobseeker(User);
-			}
-			else if (User.IsCompany())
+                if (User.IsJobseeker())
+                {
+                    responds = await _vacancieRespondService.GetVacancieRespondsForJobseeker(User);
+                }
+                else if (User.IsCompany())
+                {
+                    responds = await _vacancieRespondService.GetVacancieRespondsForCompany(User);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+			catch
 			{
-				responds = await _vacancieRespondService.GetVacancieRespondsForCompany(User);
+				return NotFound();
 			}
-			else
-			{
-				return Forbid();
-			}
-
+			
 			return View(_vacancieRespondService.GetIndexVmList(responds));
 		}
 
 		[HttpGet]
-		[Authorize]
 		public async Task<IActionResult> Details(int resumeId, int vacancieId)
 		{
 			VacancieRespond respond = await _dbContext.VacancieResponds.AsNoTracking()
@@ -123,17 +128,16 @@ namespace JobSearchWebsite.MVC.Controllers
 		[Authorize(Policy = Constants.JobseekerPolicy)]
 		public async Task<IActionResult> Delete(VacancieRespondIndexVm fromRequest)
 		{
-			//Resume resume = await _dbContext.Resumes
-			//	.Include(r => r.VacancieResponds
-			//		.Where(respond => respond.ResumeId == r.Id && respond.VacancieId == fromRequest.VacancieId))
-			//	.FirstOrDefaultAsync(r => r.Id == fromRequest.ResumeId);
-
 			Resume resume = await _dbContext.Resumes.AsNoTracking()
 				.FirstOrDefaultAsync(r => r.Id == fromRequest.VacancieRespond.ResumeId);
+			if(resume == null)
+			{
+				return NotFound();
+			}
 			VacancieRespond respond = await _dbContext.VacancieResponds
 				.FirstOrDefaultAsync(r => r.VacancieId == fromRequest.VacancieRespond.VacancieId && r.ResumeId == resume.Id);
 
-			if (resume == null || respond == null)
+			if (respond == null)
 			{
 				return NotFound();
 			}

@@ -1,6 +1,6 @@
 ﻿namespace Data.Enums
 {
-	public enum VacancieRespondStatus
+	public enum RespondStatus
 	{
 		Pending,
 		Accepted,

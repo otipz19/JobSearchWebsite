@@ -24,8 +24,8 @@
                             @{
                                 string badgeStyle = viewModel.VacancieRespond.Status switch
                                 {
-                                    VacancieRespondStatus.Accepted => "bg-success",
-                                    VacancieRespondStatus.Rejected => "bg-danger",
+                                    RespondStatus.Accepted => "bg-success",
+                                    RespondStatus.Rejected => "bg-danger",
                                     _ => "bg-primary",
                                 };
                             }
@@ -43,7 +43,7 @@
                      <div class="d-flex flex-row w-100 justify-content-between align-items-end"> 
                         <div class="d-flex flex-column justify-content-end">
                             <small>@viewModel.SentAgo</small>
-                            @if (viewModel.VacancieRespond.Status != VacancieRespondStatus.Pending)
+                            @if (viewModel.VacancieRespond.Status != RespondStatus.Pending)
                             {
                                 <small>@viewModel.AnsweredAgo</small>
                             }

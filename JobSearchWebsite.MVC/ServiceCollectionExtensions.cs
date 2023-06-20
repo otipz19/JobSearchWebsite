@@ -40,7 +40,8 @@ namespace JobSearchWebsite.MVC
                 .AddScoped<IValidator<BaseProfileEntity>, BaseProfileEntityValidator>()
                 .AddScoped<IValidator<Vacancie>, VacancieValidator>()
                 .AddScoped<IValidator<VacancieUpsertVm>, VacancieUpsertVmValidator>()
-                .AddScoped<IValidator<ResumeUpsertVm>, ResumeUpsertVmValidator>();
+                .AddScoped<IValidator<ResumeUpsertVm>, ResumeUpsertVmValidator>()
+                .AddScoped<IValidator<JobOffer>, JobOfferValidator>();
         }
 
         public static IServiceCollection AddIdentity(this IServiceCollection services)
@@ -70,7 +71,8 @@ namespace JobSearchWebsite.MVC
                 .AddScoped<IVacancieService, VacancieService>()
                 .AddScoped<IResumeService, ResumeService>()
                 .AddScoped<IResumeDocumentService, ResumeDocumentService>()
-                .AddScoped<IVacancieRespondService, VacancieRespondService>();
+                .AddScoped<IVacancieRespondService, VacancieRespondService>()
+                .AddScoped<IJobOfferService, JobOfferService>();
         }
     }
 }

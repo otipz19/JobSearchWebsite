@@ -22,8 +22,8 @@
                         @{
                             string badgeStyle = Model.VacancieRespond.Status switch
                             {
-                                VacancieRespondStatus.Accepted => "bg-success",
-                                VacancieRespondStatus.Rejected => "bg-danger",
+                                RespondStatus.Accepted => "bg-success",
+                                RespondStatus.Rejected => "bg-danger",
                                 _ => "bg-primary",
                             };
                         }
@@ -41,24 +41,24 @@
                 <div class="d-flex flex-row w-100 justify-content-between align-items-end"> 
                     <div class="d-flex flex-column justify-content-between">
                         <small>@Model.SentAgo</small>
-                        @if (Model.VacancieRespond.Status != VacancieRespondStatus.Pending)
+                        @if (Model.VacancieRespond.Status != RespondStatus.Pending)
                         {
                             <small>@Model.AnsweredAgo</small>
                         }
                     </div>
                     <div class="d-flex flex-row justify-content-end">
-                        @if (User.IsCompany() && Model.VacancieRespond.Status == VacancieRespondStatus.Pending)
+                        @if (User.IsCompany() && Model.VacancieRespond.Status == RespondStatus.Pending)
                         {
                             <form method="post" asp-action="ChangeStatus">
                                 <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
                                 <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
-                                <input hidden asp-for="@Model.VacancieRespond.Status" value="@VacancieRespondStatus.Accepted" />
+                                <input hidden asp-for="@Model.VacancieRespond.Status" value="@RespondStatus.Accepted" />
                                 <button type="submit" class="btn btn-outline-success ms-3">Accept</button>
                             </form>
                             <form method="post" asp-action="ChangeStatus">
                                 <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
                                 <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
-                                <input hidden asp-for="@Model.VacancieRespond.Status" value="@VacancieRespondStatus.Rejected" />
+                                <input hidden asp-for="@Model.VacancieRespond.Status" value="@RespondStatus.Rejected" />
                                 <button type="submit" class="btn btn-outline-danger ms-3">Reject</button>
                             </form>
                         }
