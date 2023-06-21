@@ -96,14 +96,19 @@ namespace Utility.Services.Responds
 			await _dbContext.SaveChangesAsync();
 		}
 
-		public List<VacancieRespondIndexVm> GetIndexVmList(IEnumerable<VacancieRespond> responds)
-		{
-			return responds.Select(GetIndexVm).ToList();
-		}
-
-		public VacancieRespondIndexVm GetIndexVm(VacancieRespond respond)
+		public VacancieRespondIndexVm GetIndexVm(IEnumerable<VacancieRespond> responds, Vacancie vacancie = null, Resume resume = null)
 		{
 			return new VacancieRespondIndexVm()
+			{
+				VacancieRepsonds = responds.Select(GetDetailsVm).ToList(),
+				CommonVacancie = vacancie,
+				CommonResume = resume,
+			};
+		}
+
+		public VacancieRespondDetailsVm GetDetailsVm(VacancieRespond respond)
+		{
+			return new VacancieRespondDetailsVm()
 			{
 				VacancieRespond = respond,
 				SentAgo = GetSentAgo(),

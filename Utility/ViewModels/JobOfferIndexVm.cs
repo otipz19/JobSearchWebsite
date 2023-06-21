@@ -2,12 +2,12 @@
 
 namespace Utility.ViewModels
 {
-	public class JobOfferIndexVm
-	{
-        public JobOffer JobOffer { get; set; }
+    public class JobOfferIndexVm
+    {
+        public List<JobOfferDetailsVm> JobOffers { get; set; }
 
-        public string SentAgo { get; set; }
+        public Resume CommonResume { get; set; }
 
-        public string AnsweredAgo { get; set; }
+        public Vacancie CommonVacancie { get; set; }
     }
 }

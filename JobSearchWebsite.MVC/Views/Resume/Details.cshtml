@@ -1,6 +1,6 @@
 ﻿@using Data.Entities;
 @using System.Security.Claims;
-@model Data.Entities.Resume
+@model Utility.ViewModels.ResumeDetailsVm
 @{
 	ViewData["Title"] = "Details";
 }
@@ -8,15 +8,18 @@
 <div class="container">
 	<div class="row mb-3">
 		<div class="col-sm-6">
-			<h3 class="display-3">@Model.Name</h3>
+			<h3 class="display-3">@Model.Resume.Name</h3>
 		</div>
-		@if(Model.Jobseeker.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+		@if (Model.Resume.Jobseeker.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
 		{
 			<div class="col-sm-6 d-flex justify-content-end align-items-center">
-				<a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="RespondsOfResume" asp-route-id="@Model.Id">
+				<a class="btn btn-outline-primary ms-3" asp-controller="JobOffer" asp-action="OffersForResume" asp-route-id="@Model.Resume.Id">
+					Offers
+				</a>
+				<a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="RespondsOfResume" asp-route-id="@Model.Resume.Id">
 					Responds
 				</a>
-				<a class="btn btn-outline-primary ms-3" asp-action="Update" asp-route-id="@Model.Id">Edit your resume</a>
+				<a class="btn btn-outline-primary ms-3" asp-action="Update" asp-route-id="@Model.Resume.Id">Edit your resume</a>
 				<!-- Button trigger modal -->
 				<button type="button" class="btn btn-outline-danger ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
 					Delete
@@ -26,7 +29,7 @@
 			<!-- Modal -->
 			<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<form method="post" asp-action="Delete">
-					<input hidden asp-for="Id">
+					<input hidden asp-for="Resume.Id">
 					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -52,14 +55,14 @@
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Description</label>
 				<div class="col-sm-10 p-2">
-					<p class="lead">@Model.Description</p>
+					<p class="lead">@Model.Resume.Description</p>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Wanted salary</label>
 				<div class="col-sm-10 p-2">
 					<div class="input-group">
-						<input type="number" disabled asp-for="WantedSalary" class="form-control" />
+						<input type="number" disabled asp-for="Resume.WantedSalary" class="form-control" />
 						<span class="input-group-text">$</span>
 					</div>
 				</div>
@@ -68,43 +71,43 @@
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Sphere</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.Sphere.Name</label>
+					<label>@Model.Resume.Sphere.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Specialization</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.Specialization.Name</label>
+					<label>@Model.Resume.Specialization.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Experience level</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.ExperienceLevel.Name</label>
+					<label>@Model.Resume.ExperienceLevel.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">English level</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.EnglishLevel.Name</label>
+					<label>@Model.Resume.EnglishLevel.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">Remoteness</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.Remoteness.Name</label>
+					<label>@Model.Resume.Remoteness.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">State</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.State.Name</label>
+					<label>@Model.Resume.State.Name</label>
 				</div>
 			</div>
 			<div class="row mb-3">
 				<label class="col-sm-2 col-form-label">City</label>
 				<div class="col-sm-10 p-2">
-					<label>@Model.City.Name</label>
+					<label>@Model.Resume.City.Name</label>
 				</div>
 			</div>
 		</div>
@@ -112,7 +115,7 @@
 		<div class="col-sm-3">
 			<div class="row mb-3">
 				<p class="lead p-2">Keywords</p>
-				@foreach (Keyword keyword in Model.Keywords)
+				@foreach (Keyword keyword in Model.Resume.Keywords)
 				{
 					<div class="col-auto">
 						<span class="badge bg-primary text-light">@keyword.Name</span>
@@ -122,8 +125,56 @@
 
 			<div class="row mb-3">
 				<p class="lead p-2">File</p>
-				<a class="btn btn-outline-primary ms-2" href="@Model.DocumentPath"><i class="fa-regular fa-file"></i> Document</a>
+				<a class="btn btn-outline-primary ms-2" href="@Model.Resume.DocumentPath"><i class="fa-regular fa-file"></i> Document</a>
 			</div>
 		</div>
 	</div>
+
+	@if (User.IsCompany())
+	{
+		<div class="row justify-content-end">
+			<div class="col-sm-6">
+				<form method="post" asp-action="Offer">
+					<input hidden asp-for="Resume.Id" />
+					<div class="row mb-3">
+						<label asp-for="SelectedVacancieId" class="col-sm-4 col-form-label">Select your vacancie (optional)</label>
+						<div class="col-sm-8">
+							@if (Model.AvailableVacancies.Any())
+							{
+								<select asp-for="SelectedVacancieId" class="form-select">
+									<option selected disabled value="">--Select a vacancie--</option>
+									@foreach (Vacancie vacancie in Model.AvailableVacancies)
+									{
+										<option value="@vacancie.Id">@vacancie.Name</option>
+									}
+								</select>
+							}
+							else
+							{
+								<label class="col-form-label">
+									You have no vacancies yet. <a asp-controller="Vacancie" asp-action="Create">Create new?</a>
+								</label>
+							}	
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div>
+							<label asp-for="Message" class="col-sm-4 col-form-label">Provide optional message</label>
+							<textarea asp-for="Message" class="form-control" placeholder="Your message here..."></textarea>
+							<span asp-validation-for="Message" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="row mb-3">
+						<div>
+							<button type="submit" class="btn btn-outline-primary form-control">
+								Send CV
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
 </div>

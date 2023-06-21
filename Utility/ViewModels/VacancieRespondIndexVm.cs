@@ -2,12 +2,12 @@
 
 namespace Utility.ViewModels
 {
-	public class VacancieRespondIndexVm
-	{
-        public VacancieRespond VacancieRespond { get; set; }
+    public class VacancieRespondIndexVm
+    {
+        public List<VacancieRespondDetailsVm> VacancieRepsonds { get; set; }
 
-        public string SentAgo { get; set; }
+        public Vacancie CommonVacancie { get; set; }
 
-        public string AnsweredAgo { get; set; }
+        public Resume CommonResume { get; set; }
     }
 }

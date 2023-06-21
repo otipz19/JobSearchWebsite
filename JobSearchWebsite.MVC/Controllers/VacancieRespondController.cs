@@ -57,7 +57,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return NotFound();
 			}
 			
-			return View(_vacancieRespondService.GetIndexVmList(responds));
+			return View(_vacancieRespondService.GetIndexVm(responds));
 		}
 
 		[HttpGet]
@@ -77,7 +77,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				return Forbid();
 			}
-			return View(_vacancieRespondService.GetIndexVm(respond));
+			return View(_vacancieRespondService.GetDetailsVm(respond));
 		}
 
 		[HttpGet]
@@ -97,7 +97,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			return View(_vacancieRespondService.GetIndexVmList(resume.VacancieResponds));
+			return View(_vacancieRespondService.GetIndexVm(resume.VacancieResponds, resume: resume));
 		}
 
 		[HttpGet]
@@ -117,7 +117,7 @@ namespace JobSearchWebsite.MVC.Controllers
 				return Forbid();
 			}
 
-			return View(_vacancieRespondService.GetIndexVmList(vacancie.VacancieResponds));
+			return View(_vacancieRespondService.GetIndexVm(vacancie.VacancieResponds, vacancie: vacancie));
 		}
 
 		/// <summary>
@@ -126,7 +126,7 @@ namespace JobSearchWebsite.MVC.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Policy = Constants.JobseekerPolicy)]
-		public async Task<IActionResult> Delete(VacancieRespondIndexVm fromRequest)
+		public async Task<IActionResult> Delete(VacancieRespondDetailsVm fromRequest)
 		{
 			Resume resume = await _dbContext.Resumes.AsNoTracking()
 				.FirstOrDefaultAsync(r => r.Id == fromRequest.VacancieRespond.ResumeId);
@@ -155,7 +155,7 @@ namespace JobSearchWebsite.MVC.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[Authorize(Policy = Constants.CompanyPolicy)]
-		public async Task<IActionResult> ChangeStatus(VacancieRespondIndexVm fromRequest)
+		public async Task<IActionResult> ChangeStatus(VacancieRespondDetailsVm fromRequest)
 		{
 			VacancieRespond respond;
 			try

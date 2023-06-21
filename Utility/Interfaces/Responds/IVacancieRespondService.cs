@@ -22,8 +22,8 @@ namespace Utility.Interfaces.Responds
 		/// <exception cref="ArgumentException"></exception>
 		public Task ChangeStatus(VacancieRespond respond, RespondStatus status);
 
-		public List<VacancieRespondIndexVm> GetIndexVmList(IEnumerable<VacancieRespond> responds);
+		public VacancieRespondIndexVm GetIndexVm(IEnumerable<VacancieRespond> responds, Vacancie vacancie = null, Resume resume = null);
 
-		public VacancieRespondIndexVm GetIndexVm(VacancieRespond respond);
+		public VacancieRespondDetailsVm GetDetailsVm(VacancieRespond respond);
     }
 }

@@ -9,6 +9,7 @@ using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.Interfaces.Responds;
 using Utility.Utilities;
 using Utility.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Utility.Services.Responds
 {
@@ -24,15 +25,38 @@ namespace Utility.Services.Responds
             _resumeService = resumeService;
         }
 
+        public async Task CreateJobOffer(int resumeId, int companyId, int? vacancieId = null, string message = null)
+        {
+            JobOffer jobOffer = await _dbContext.JobOffers.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.ResumeId == resumeId && r.CompanyId == companyId);
+            if (jobOffer != null)
+            {
+                throw new ApplicationException("JobOffer already exists");
+            }
+
+            jobOffer = new JobOffer()
+            {
+                ResumeId = resumeId,
+                CompanyId = companyId,
+                VacancieId = vacancieId,
+                Message = message,
+            };
+            _dbContext.JobOffers.Add(jobOffer);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<List<JobOffer>> GetJobOffersForJobseeker(ClaimsPrincipal user)
         {
             Jobseeker jobseeker = await _dbContext.Jobseekers.AsNoTracking()
                     .Include(j => j.Resumes)
                         .ThenInclude(r => r.JobOffers)
                             .ThenInclude(o => o.Vacancie)
+                                .ThenInclude(v => v.Company)
                     .FirstOrDefaultAsync(j => j.AppUserId == user.FindFirstValue(ClaimTypes.NameIdentifier));
             Guard.Against.Null(jobseeker);
-            return jobseeker.Resumes.SelectMany(r => r.JobOffers).ToList();
+			var jobOffers = jobseeker.Resumes.SelectMany(r => r.JobOffers).ToList();
+            jobOffers.ForEach(j => j.Company = j.Vacancie.Company);
+            return jobOffers;
         }
 
         public async Task<List<JobOffer>> GetJobOffersForCompany(ClaimsPrincipal user)
@@ -43,17 +67,24 @@ namespace Utility.Services.Responds
                            .ThenInclude(o => o.Resume)
                    .FirstOrDefaultAsync(c => c.AppUserId == user.FindFirstValue(ClaimTypes.NameIdentifier));
             Guard.Against.Null(company);
-            return company.Vacancies.SelectMany(v => v.JobOffers).ToList();
-        }
+            var jobOffers = company.Vacancies.SelectMany(v => v.JobOffers).ToList();
+            jobOffers.ForEach(j => j.Company = company);
+            return jobOffers;
+		}
 
-        public List<JobOfferIndexVm> GetIndexVmList(IEnumerable<JobOffer> offers)
-        {
-            return offers.Select(GetIndexVm).ToList();
-        }
-
-        public JobOfferIndexVm GetIndexVm(JobOffer offer)
+        public JobOfferIndexVm GetIndexVm(IEnumerable<JobOffer> offers, Vacancie vacancie = null, Resume resume = null)
         {
             return new JobOfferIndexVm()
+            {
+                JobOffers = offers.Select(GetDetailsVm).ToList(),
+                CommonResume = resume,
+                CommonVacancie = vacancie,
+            };
+        }
+
+        public JobOfferDetailsVm GetDetailsVm(JobOffer offer)
+        {
+            return new JobOfferDetailsVm()
             {
                 JobOffer = offer,
                 SentAgo = GetSentAgo(),

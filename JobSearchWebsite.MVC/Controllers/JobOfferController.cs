@@ -1,6 +1,5 @@
 ﻿using Data;
 using Data.Entities;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,21 +18,18 @@ namespace JobSearchWebsite.MVC.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IJobOfferService _jobOfferService;
-        private readonly IValidator<JobOffer> _validator;
         private readonly IResumeService _resumeService;
         private readonly ICompanyProfileService _companyProfileService;
         private readonly IVacancieService _vacancieService;
 
         public JobOfferController(AppDbContext dbContext,
             IJobOfferService jobOfferService,
-            IValidator<JobOffer> validator,
             IResumeService resumeService,
             ICompanyProfileService companyProfileService,
             IVacancieService vacancieService)
         {
             _dbContext = dbContext;
             _jobOfferService = jobOfferService;
-            _validator = validator;
             _resumeService = resumeService;
             _companyProfileService = companyProfileService;
             _vacancieService = vacancieService;
@@ -64,7 +60,7 @@ namespace JobSearchWebsite.MVC.Controllers
                 return NotFound();
             }
 
-            return View(_jobOfferService.GetIndexVmList(jobOffers));
+            return View(_jobOfferService.GetIndexVm(jobOffers));
         }
 
         [HttpGet]
@@ -84,7 +80,7 @@ namespace JobSearchWebsite.MVC.Controllers
             {
                 return Forbid();
             }
-            return View(_jobOfferService.GetIndexVm(jobOffer));
+            return View(_jobOfferService.GetDetailsVm(jobOffer));
         }
 
         [HttpGet]
@@ -106,7 +102,7 @@ namespace JobSearchWebsite.MVC.Controllers
                 return Forbid();
             }
 
-            return View(_jobOfferService.GetIndexVmList(resume.JobOffers));
+            return View(_jobOfferService.GetIndexVm(resume.JobOffers, resume: resume));
         }
 
         [HttpGet]
@@ -126,14 +122,14 @@ namespace JobSearchWebsite.MVC.Controllers
             {
                 return Forbid();
             }
-
-            return View(_jobOfferService.GetIndexVmList(vacancie.JobOffers));
+            vacancie.JobOffers.ForEach(j => j.Company = j.Vacancie.Company);
+            return View(_jobOfferService.GetIndexVm(vacancie.JobOffers, vacancie: vacancie));
         }
 
 		[HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = Constants.CompanyPolicy)]
-        public async Task<IActionResult> Delete(JobOfferIndexVm fromRequest)
+        public async Task<IActionResult> Delete(JobOfferDetailsVm fromRequest)
         {
             Resume resume = await _dbContext.Resumes.AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == fromRequest.JobOffer.ResumeId);
@@ -163,7 +159,7 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = Constants.JobseekerPolicy)]
-        public async Task<IActionResult> ChangeStatus(JobOfferIndexVm fromRequest)
+        public async Task<IActionResult> ChangeStatus(JobOfferDetailsVm fromRequest)
         {
             JobOffer offer;
             try
@@ -187,10 +183,10 @@ namespace JobSearchWebsite.MVC.Controllers
             catch
             {
                 TempData.Toaster().Error("This offer has been already considered");
-                return RedirectToAction(nameof(Details), new { offer.ResumeId, offer.VacancieId });
+                return RedirectToAction(nameof(Details), new { offer.ResumeId, offer.CompanyId });
             }
 
-            return RedirectToAction(nameof(Details), new { offer.ResumeId, offer.VacancieId });
+            return RedirectToAction(nameof(Details), new { offer.ResumeId, offer.CompanyId });
         }
     }
 }

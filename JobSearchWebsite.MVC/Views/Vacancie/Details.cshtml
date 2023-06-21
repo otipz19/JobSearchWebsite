@@ -17,6 +17,9 @@
 				<a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="RespondsForVacancie" asp-route-id="@Model.Vacancie.Id">
 					Responds
 				</a>
+				<a class="btn btn-outline-primary ms-3" asp-controller="JobOffer" asp-action="OffersOfVacancie" asp-route-id="@Model.Vacancie.Id">
+					Offers
+				</a>
 				<a class="btn btn-outline-primary ms-3" asp-action="Update" asp-route-id="@Model.Vacancie.Id">Edit your vacancie</a>
 				<!-- Button trigger modal -->
 				<button type="button" class="btn btn-outline-danger ms-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -140,13 +143,23 @@
 					<div class="row mb-3">
 						<label asp-for="SelectedResumeId" class="col-sm-4 col-form-label">Select your resume</label>
 						<div class="col-sm-8">
-							<select asp-for="SelectedResumeId" class="form-select">
-								<option selected disabled value="">--Select a resume--</option>
-								@foreach (Resume resume in Model.AvailableResumes)
-								{
-									<option value="@resume.Id">@resume.Name</option>
-								}
-							</select>
+							@if (Model.AvailableResumes.Any())
+							{
+								<select asp-for="SelectedResumeId" class="form-select">
+									<option selected disabled value="">--Select a resume--</option>
+									@foreach (Resume resume in Model.AvailableResumes)
+									{
+										<option value="@resume.Id">@resume.Name</option>
+									}
+								</select>
+							}
+							else
+							{
+								<label class="col-form-label">
+									You have no resumes yet. <a asp-controller="Resume" asp-action="Create">Create new?</a>
+								</label>
+							}
+
 						</div>
 					</div>
 

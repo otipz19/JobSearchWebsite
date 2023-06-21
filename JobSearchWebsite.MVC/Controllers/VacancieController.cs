@@ -12,6 +12,7 @@ using Utility.Utilities;
 using Utility.Interfaces.BaseFilterableEntityServices;
 using Data.Enums;
 using Utility.Interfaces.Responds;
+using Utility.Interfaces.Profile;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -22,21 +23,24 @@ namespace JobSearchWebsite.MVC.Controllers
 		private readonly IVacancieService _vacancieService;
 		private readonly IResumeService _resumeService;
 		private readonly IVacancieRespondService _vacancieRespondService;
+		private readonly IJobseekerProfileService _jobseekerProfileService;
 
-		public VacancieController(AppDbContext dbContext,
-			IValidator<VacancieUpsertVm> validator,
-			IVacancieService vacancieService,
-			IResumeService resumeService,
-			IVacancieRespondService vacancieRespondService)
-		{
-			_dbContext = dbContext;
-			_validator = validator;
-			_vacancieService = vacancieService;
-			_resumeService = resumeService;
-			_vacancieRespondService = vacancieRespondService;
-		}
+        public VacancieController(AppDbContext dbContext,
+            IValidator<VacancieUpsertVm> validator,
+            IVacancieService vacancieService,
+            IResumeService resumeService,
+            IVacancieRespondService vacancieRespondService,
+            IJobseekerProfileService jobseekerProfileService)
+        {
+            _dbContext = dbContext;
+            _validator = validator;
+            _vacancieService = vacancieService;
+            _resumeService = resumeService;
+            _vacancieRespondService = vacancieRespondService;
+            _jobseekerProfileService = jobseekerProfileService;
+        }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Index()
 		{
 			var vacancies = _vacancieService.GetVacancieIndexVmList(await _dbContext.Vacancies.ToListAsync());
@@ -57,8 +61,11 @@ namespace JobSearchWebsite.MVC.Controllers
 			};
 			if (User.IsJobseeker())
 			{
-				var jobseeker = await _dbContext.Jobseekers.AsNoTracking()
-					.FirstOrDefaultAsync(j => j.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+				var jobseeker = await _jobseekerProfileService.GetUserProfile(User);
+				if(jobseeker == null)
+				{
+					return NotFound();
+				}
 				viewModel.AvailableResumes = await _dbContext.Resumes.AsNoTracking()
 					.Where(r => r.JobseekerId == jobseeker.Id)
 					.ToListAsync();

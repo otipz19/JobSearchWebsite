@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Utility.ViewModels.VacancieRespondIndexVm>
+﻿@model Utility.ViewModels.VacancieRespondIndexVm
 @using Data.Enums
 @{
 	ViewData["Title"] = "Responds of resume";
@@ -7,12 +7,12 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-6">
-            <h3 class="display-3">Vacancie Responds List</h3>
+            <h3 class="display-3">Vacancie Responds of @Model.CommonResume.Name resume</h3>
         </div>
     </div>
     <div class="row">
         <div class="list-group">
-            @foreach (VacancieRespondIndexVm viewModel in Model)
+            @foreach (VacancieRespondDetailsVm viewModel in Model.VacancieRepsonds)
             {
                 <div class="list-group-item">
                     <div class="d-flex flex-row w-100 justify-content-between">

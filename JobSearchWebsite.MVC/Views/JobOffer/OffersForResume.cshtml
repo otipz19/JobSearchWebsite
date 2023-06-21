@@ -1,0 +1,67 @@
+﻿@model Utility.ViewModels.JobOfferIndexVm
+@using Data.Enums
+@{
+	ViewData["Title"] = "Offers for resume";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="display-3">Job Offers For @Model.CommonResume.Name resume</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="list-group">
+            @foreach (JobOfferDetailsVm viewModel in Model.JobOffers)
+            {
+                <div class="list-group-item">
+                    <div class="d-flex flex-row w-100 justify-content-between">
+                        <div class="">
+                            <label>Company: </label>
+                            <a asp-controller="Company" asp-action="Details" asp-route-Id="@viewModel.JobOffer.Company.Id">@viewModel.JobOffer.Company.Name</a>
+                        </div>
+                         <div>
+                            @{
+                                string badgeStyle = viewModel.JobOffer.Status switch
+                                {
+                                    RespondStatus.Accepted => "bg-success",
+                                    RespondStatus.Rejected => "bg-danger",
+                                    _ => "bg-primary",
+                                };
+                            }
+                            <span class="badge @badgeStyle">@viewModel.JobOffer.Status.ToString()</span>
+                         </div>   
+                    </div>
+
+                    <div class="d-flex flex-row w-100 justify-content-between">
+                        <div class="">
+                            <label>Resume: </label>
+                            <a asp-controller="Resume" asp-action="Details" asp-route-Id="@viewModel.JobOffer.Resume.Id">@viewModel.JobOffer.Resume.Name</a>
+                        </div>
+                    </div>
+
+                    @if(viewModel.JobOffer.Vacancie != null)
+                    {
+                        <div class="d-flex flex-row w-100 justify-content-between">
+                            <div class="">
+                                <label>Vacancie: </label>
+                                <a asp-controller="Vacancie" asp-action="Details" asp-route-Id="@viewModel.JobOffer.Vacancie.Id">@viewModel.JobOffer.Vacancie.Name</a>
+                            </div>
+                        </div>
+                    }
+
+                     <div class="d-flex flex-row w-100 justify-content-between align-items-end"> 
+                        <div class="d-flex flex-column justify-content-end">
+                            <small>@viewModel.SentAgo</small>
+                            @if (viewModel.JobOffer.Status != RespondStatus.Pending)
+                            {
+                                <small>@viewModel.AnsweredAgo</small>
+                            }
+                        </div>
+                        <a asp-action="Details" asp-route-resumeId="@viewModel.JobOffer.ResumeId" asp-route-companyId="@viewModel.JobOffer.VacancieId" class="btn btn-outline-primary">Details</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

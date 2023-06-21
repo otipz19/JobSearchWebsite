@@ -11,13 +11,15 @@ namespace Utility.Interfaces.Responds
 {
     public interface IJobOfferService
     {
+        public Task CreateJobOffer(int resumeId, int companyId, int? vacancieId = null, string message = null);
+
         public Task<List<JobOffer>> GetJobOffersForJobseeker(ClaimsPrincipal user);
 
         public Task<List<JobOffer>> GetJobOffersForCompany(ClaimsPrincipal user);
 
-        public List<JobOfferIndexVm> GetIndexVmList(IEnumerable<JobOffer> offers);
+        public JobOfferIndexVm GetIndexVm(IEnumerable<JobOffer> offers, Vacancie vacancie = null, Resume resume = null);
 
-        public JobOfferIndexVm GetIndexVm(JobOffer offer);
+        public JobOfferDetailsVm GetDetailsVm(JobOffer offer);
 
         public Task<JobOffer> GetJobOfferForJobseeker(ClaimsPrincipal user, int resumeId, int companyId);
 

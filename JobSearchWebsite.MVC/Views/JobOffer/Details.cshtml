@@ -1,0 +1,99 @@
+﻿@model Utility.ViewModels.JobOfferDetailsVm
+@using Data.Enums
+@{
+	ViewData["Title"] = "Details";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="display-3">Job offer</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="d-flex flex-row w-100 justify-content-between">
+                    <div class="">
+                        <label>Company: </label>
+                        <a asp-controller="Company" asp-action="Details" asp-route-Id="@Model.JobOffer.Company.Id">@Model.JobOffer.Company.Name</a>
+                    </div>
+                        <div>
+                        @{
+                            string badgeStyle = Model.JobOffer.Status switch
+                            {
+                                RespondStatus.Accepted => "bg-success",
+                                RespondStatus.Rejected => "bg-danger",
+                                _ => "bg-primary",
+                            };
+                        }
+                        <span class="badge @badgeStyle">@Model.JobOffer.Status.ToString()</span>
+                        </div>   
+                </div>
+
+                @if(Model.JobOffer.Vacancie != null)
+                {
+                    <div class="d-flex flex-row w-100 justify-content-between">
+                        <div class="">
+                            <label>Vacancie: </label>
+                            <a asp-controller="Vacancie" asp-action="Details" asp-route-Id="@Model.JobOffer.Vacancie.Id">@Model.JobOffer.Vacancie.Name</a>
+                        </div>
+                    </div>
+                }
+
+                <div class="d-flex flex-row w-100 justify-content-between">
+                    <div class="">
+                        <label>Resume: </label>
+                        <a class="muted" asp-controller="Resume" asp-action="Details" asp-route-Id="@Model.JobOffer.Resume.Id">@Model.JobOffer.Resume.Name</a>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.JobOffer.Message))
+                {
+                    <div class="d-flex flex-row w-100 justify-content-between">
+                        <div class="">
+                            <label>Message: </label>
+                            <p class="lead">@Model.JobOffer.Message</p>
+                        </div>
+                    </div>
+                }
+                
+                <div class="d-flex flex-row w-100 justify-content-between align-items-end"> 
+                    <div class="d-flex flex-column justify-content-between">
+                        <small>@Model.SentAgo</small>
+                        @if (Model.JobOffer.Status != RespondStatus.Pending)
+                        {
+                            <small>@Model.AnsweredAgo</small>
+                        }
+                    </div>
+                    <div class="d-flex flex-row justify-content-end">
+                        @if (User.IsJobseeker() && Model.JobOffer.Status == RespondStatus.Pending)
+                        {
+                            <form method="post" asp-action="ChangeStatus">
+                                <input hidden asp-for="@Model.JobOffer.CompanyId" />
+                                <input hidden asp-for="@Model.JobOffer.ResumeId" />
+                                <input hidden asp-for="@Model.JobOffer.Status" value="@RespondStatus.Accepted" />
+                                <button type="submit" class="btn btn-outline-success ms-3">Accept</button>
+                            </form>
+                            <form method="post" asp-action="ChangeStatus">
+                                <input hidden asp-for="@Model.JobOffer.CompanyId" />
+                                <input hidden asp-for="@Model.JobOffer.ResumeId" />
+                                <input hidden asp-for="@Model.JobOffer.Status" value="@RespondStatus.Rejected" />
+                                <button type="submit" class="btn btn-outline-danger ms-3">Reject</button>
+                            </form>
+                        }
+                        else if (User.IsCompany())
+                        {
+                            <form method="post" asp-action="Delete">
+                                <input hidden asp-for="@Model.JobOffer.CompanyId" />
+                                <input hidden asp-for="@Model.JobOffer.ResumeId" />
+                                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                            </form>
+                        }
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.Interfaces.FileUpload.Document;
+using Utility.Interfaces.Profile;
+using Utility.Interfaces.Responds;
 using Utility.Toaster;
 using Utility.Utilities;
 using Utility.ViewModels;
@@ -19,18 +21,30 @@ namespace JobSearchWebsite.MVC.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IResumeService _resumeService;
-        private readonly IValidator<ResumeUpsertVm> _validator;
+        private readonly IValidator<ResumeUpsertVm> _validatorUpsert;
+        private readonly IValidator<ResumeDetailsVm> _validatorDetails;
         private readonly IResumeDocumentService _documentService;
+        private readonly ICompanyProfileService _companyProfileService;
+        private readonly IVacancieService _vacancieService;
+        private readonly IJobOfferService _jobOfferService;
 
         public ResumeController(AppDbContext dbContext,
             IResumeService resumeService,
             IValidator<ResumeUpsertVm> validator,
-            IResumeDocumentService documentService)
+            IResumeDocumentService documentService,
+            ICompanyProfileService companyProfileService,
+            IValidator<ResumeDetailsVm> validatorDetails,
+            IVacancieService vacancieService,
+            IJobOfferService jobOfferService)
         {
             _dbContext = dbContext;
             _resumeService = resumeService;
-            _validator = validator;
+            _validatorUpsert = validator;
             _documentService = documentService;
+            _companyProfileService = companyProfileService;
+            _validatorDetails = validatorDetails;
+            _vacancieService = vacancieService;
+            _jobOfferService = jobOfferService;
         }
 
         [HttpGet]
@@ -48,7 +62,23 @@ namespace JobSearchWebsite.MVC.Controllers
             {
                 return NotFound();
             }
-            return View(resume);
+
+            ResumeDetailsVm viewModel = new()
+            {
+                Resume = resume,
+            };
+            if (User.IsCompany())
+            {
+                Company company = await _companyProfileService.GetUserProfile(User);
+                if(company == null)
+                {
+                    return NotFound();
+                }
+                viewModel.AvailableVacancies = await _dbContext.Vacancies.AsNoTracking()
+                    .Where(v => v.CompanyId == company.Id)
+                    .ToListAsync();
+            }
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -64,7 +94,7 @@ namespace JobSearchWebsite.MVC.Controllers
         [Authorize(Policy = Constants.JobseekerPolicy)]
         public async Task<IActionResult> Create(ResumeUpsertVm viewModel)
         {
-            var validationResult = await _validator.ValidateAsync(viewModel);
+            var validationResult = await _validatorUpsert.ValidateAsync(viewModel);
             if (!validationResult.IsValid)
             {
                 validationResult.AddToModelState(ModelState);
@@ -144,7 +174,7 @@ namespace JobSearchWebsite.MVC.Controllers
                 return Forbid();
             }
 
-            var validationResult = await _validator.ValidateAsync(viewModel);
+            var validationResult = await _validatorUpsert.ValidateAsync(viewModel);
             if (!validationResult.IsValid)
             {
                 validationResult.AddToModelState(ModelState);
@@ -216,6 +246,68 @@ namespace JobSearchWebsite.MVC.Controllers
             await _dbContext.SaveChangesAsync();
             TempData.Toaster().Success("Resume deleted successfully");
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = Constants.CompanyPolicy)]
+        public async Task<IActionResult> Offer(ResumeDetailsVm viewModel)
+        {
+            Company company = await _companyProfileService.GetUserProfile(User);
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            Resume resume = await _dbContext.Resumes.AsNoTracking()
+               .FirstOrDefaultAsync(r => r.Id == viewModel.Resume.Id);
+            if (resume == null)
+            {
+                return NotFound();
+            }
+
+            if(viewModel.SelectedVacancieId != null)
+            {
+                Vacancie vacancie = await _dbContext.Vacancies.AsNoTracking()
+                    .FirstOrDefaultAsync(v => v.Id == viewModel.SelectedVacancieId);
+                if (vacancie == null)
+                {
+                    return NotFound();
+                }
+
+                if (!await _vacancieService.UserHasAccessTo(User, vacancie))
+                {
+                    return Forbid();
+                }
+            }
+            if(!viewModel.Message.IsNullOrEmpty())
+            {
+                var validationResult = await _validatorDetails.ValidateAsync(viewModel);
+                if (!validationResult.IsValid)
+                {
+                    validationResult.AddToModelState(ModelState);
+                    TempData.Toaster().ValidationFailed(validationResult);
+                    return RedirectToAction(nameof(Details), new { id = resume.Id });
+                }
+            }
+            if(viewModel.SelectedVacancieId == null && viewModel.Message.IsNullOrEmpty())
+            {
+                TempData.Toaster().Error("You should either choose vacancie or provide a message");
+				return RedirectToAction(nameof(Details), new { id = resume.Id });
+			}
+
+			try
+            {
+                await _jobOfferService.CreateJobOffer(resume.Id, company.Id, viewModel.SelectedVacancieId, viewModel.Message);
+            }
+            catch
+            {
+                TempData.Toaster().Warning("You've already offered to this resume");
+                return RedirectToAction(nameof(Details), new { id = resume.Id });
+            }
+
+            TempData.Toaster().Success("Offered to resume successfully");
+            return RedirectToAction(nameof(Details), new { id = resume.Id });
         }
     }
 }
