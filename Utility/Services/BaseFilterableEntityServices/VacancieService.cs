@@ -7,17 +7,23 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text;
 using Utility.Interfaces.BaseFilterableEntityServices;
+using Utility.Interfaces.Checkbox;
+using Utility.Services.Checkbox;
 using Utility.ViewModels;
 
 namespace Utility.Services.BaseFilterableEntityServices
 {
     public class VacancieService : BaseFilterableEntityService<Vacancie>, IVacancieService
     {
-        public VacancieService(AppDbContext dbContext) : base(dbContext)
-        {
-        }
+        private readonly ICheckboxService _checkboxService;
 
-        public List<VacancieIndexVm> GetVacancieIndexVmList(IEnumerable<Vacancie> vacancies)
+		public VacancieService(AppDbContext dbContext,
+            ICheckboxService checkboxService) : base(dbContext)
+		{
+			_checkboxService = checkboxService;
+		}
+
+		public List<VacancieIndexVm> GetVacancieIndexVmList(IEnumerable<Vacancie> vacancies)
         {
             return vacancies.Select(v => new VacancieIndexVm()
             {
@@ -118,40 +124,31 @@ namespace Utility.Services.BaseFilterableEntityServices
 
         private async Task AddCheckboxOptionsToVM(VacancieUpsertVm viewModel)
         {
-            viewModel.CheckboxKeywords = await MapCheckboxOptions(_dbContext.Keywords);
-            viewModel.CheckboxStates = await MapCheckboxOptions(_dbContext.States);
-            viewModel.CheckboxCities = await MapCheckboxOptions(_dbContext.Cities);
+            viewModel.CheckboxKeywords = await _checkboxService.MapFromEntities(_dbContext.Keywords);
+            viewModel.CheckboxStates = await _checkboxService.MapFromEntities(_dbContext.States);
+            viewModel.CheckboxCities = await _checkboxService.MapFromEntities(_dbContext.Cities);
         }
 
-        private void SetCheckboxesInVM<T>(VacancieUpsertVm viewModel,
-            IEnumerable<T> keywords,
-            IEnumerable<T> states,
-            IEnumerable<T> cities,
-            Func<T, int> selector)
-        {
-            SetCheckboxesInVM(viewModel,
-                keywords.Select(selector),
-                states.Select(selector),
-                cities.Select(selector));
-        }
+		private void SetCheckboxesInVM<T>(VacancieUpsertVm viewModel,
+			IEnumerable<T> keywords,
+			IEnumerable<T> states,
+			IEnumerable<T> cities,
+			Func<T, int> selector)
+		{
+			SetCheckboxesInVM(viewModel,
+				keywords.Select(selector),
+				states.Select(selector),
+				cities.Select(selector));
+		}
 
-        private void SetCheckboxesInVM(VacancieUpsertVm viewModel,
-            IEnumerable<int> keywordsId,
-            IEnumerable<int> statesId,
-            IEnumerable<int> citiesId)
-        {
-            foreach (int id in keywordsId)
-            {
-                viewModel.CheckboxKeywords.First(c => c.Id == id).IsChecked = true;
-            }
-            foreach (int id in statesId)
-            {
-                viewModel.CheckboxStates.First(c => c.Id == id).IsChecked = true;
-            }
-            foreach (int id in citiesId)
-            {
-                viewModel.CheckboxCities.First(c => c.Id == id).IsChecked = true;
-            }
-        }
-    }
+		private void SetCheckboxesInVM(VacancieUpsertVm viewModel,
+			IEnumerable<int> keywordsId,
+			IEnumerable<int> statesId,
+			IEnumerable<int> citiesId)
+		{
+            _checkboxService.SetIsChecked(viewModel.CheckboxKeywords, keywordsId);
+			_checkboxService.SetIsChecked(viewModel.CheckboxStates, statesId);
+			_checkboxService.SetIsChecked(viewModel.CheckboxCities, citiesId);
+		}
+	}
 }

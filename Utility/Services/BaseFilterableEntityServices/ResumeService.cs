@@ -6,14 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text;
 using Utility.Interfaces.BaseFilterableEntityServices;
+using Utility.Interfaces.Checkbox;
 using Utility.ViewModels;
 
 namespace Utility.Services.BaseFilterableEntityServices
 {
     public class ResumeService : BaseFilterableEntityService<Resume>, IResumeService
     {
-        public ResumeService(AppDbContext dbContext) : base(dbContext)
+        private readonly ICheckboxService _checkboxService;
+
+        public ResumeService(AppDbContext dbContext,
+            ICheckboxService checkboxService) : base(dbContext)
         {
+            _checkboxService = checkboxService;
         }
 
         public List<ResumeIndexVm> GetResumeIndexVmList(IEnumerable<Resume> resumes)
@@ -111,7 +116,7 @@ namespace Utility.Services.BaseFilterableEntityServices
 
         private async Task AddCheckboxOptionsToVM(ResumeUpsertVm viewModel)
         {
-            viewModel.CheckboxKeywords = await MapCheckboxOptions(_dbContext.Keywords);
+            viewModel.CheckboxKeywords = await _checkboxService.MapFromEntities(_dbContext.Keywords);
         }
 
         private void SetCheckboxesInVM<T>(ResumeUpsertVm viewModel,

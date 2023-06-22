@@ -20,6 +20,10 @@ using Utility.Services.FileUpload.Document;
 using Laraue.EfCoreTriggers.SqlServer.Extensions;
 using Utility.Interfaces.Responds;
 using Utility.Services.Responds;
+using Utility.Interfaces.FilterServices;
+using Utility.Services.FilterServices;
+using Utility.Interfaces.Checkbox;
+using Utility.Services.Checkbox;
 
 namespace JobSearchWebsite.MVC
 {
@@ -72,7 +76,9 @@ namespace JobSearchWebsite.MVC
                 .AddScoped<IResumeService, ResumeService>()
                 .AddScoped<IResumeDocumentService, ResumeDocumentService>()
                 .AddScoped<IVacancieRespondService, VacancieRespondService>()
-                .AddScoped<IJobOfferService, JobOfferService>();
+                .AddScoped<IJobOfferService, JobOfferService>()
+                .AddScoped<IVacancieFilterService, VacancieFilterService>()
+                .AddScoped<ICheckboxService, CheckboxService>();
         }
     }
 }

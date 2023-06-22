@@ -75,16 +75,5 @@ namespace Utility.Services.BaseFilterableEntityServices
                 .Where(e => ids.Select(k => int.Parse(k)).Contains(e.Id))
                 .ToListAsync());
         }
-
-        protected async Task<List<CheckboxOption>> MapCheckboxOptions(IQueryable<BaseFilteringEntity> entities)
-        {
-            return await entities.Select(f => new CheckboxOption()
-            {
-                IsChecked = false,
-                Text = f.Name,
-                Value = f.Id.ToString(),
-            })
-            .ToListAsync();
-        }
     }
 }

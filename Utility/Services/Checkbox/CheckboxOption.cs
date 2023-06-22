@@ -1,7 +1,7 @@
-﻿namespace Utility.ViewModels
+﻿namespace Utility.Services.Checkbox
 {
-	public class CheckboxOption
-	{
+    public class CheckboxOption
+    {
         public bool IsChecked { get; set; }
 
         public string Value { get; set; }

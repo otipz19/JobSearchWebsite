@@ -13,6 +13,11 @@ using Utility.Interfaces.BaseFilterableEntityServices;
 using Data.Enums;
 using Utility.Interfaces.Responds;
 using Utility.Interfaces.Profile;
+using System.Reflection;
+using Microsoft.IdentityModel.Tokens;
+using Utility.Interfaces.FilterServices;
+using Utility.Services.FilterServices;
+using Utility.Services.Pagination;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -24,28 +29,63 @@ namespace JobSearchWebsite.MVC.Controllers
 		private readonly IResumeService _resumeService;
 		private readonly IVacancieRespondService _vacancieRespondService;
 		private readonly IJobseekerProfileService _jobseekerProfileService;
+		private readonly IVacancieFilterService _vacancieFilterService;
 
-        public VacancieController(AppDbContext dbContext,
-            IValidator<VacancieUpsertVm> validator,
-            IVacancieService vacancieService,
-            IResumeService resumeService,
-            IVacancieRespondService vacancieRespondService,
-            IJobseekerProfileService jobseekerProfileService)
-        {
-            _dbContext = dbContext;
-            _validator = validator;
-            _vacancieService = vacancieService;
-            _resumeService = resumeService;
-            _vacancieRespondService = vacancieRespondService;
-            _jobseekerProfileService = jobseekerProfileService;
-        }
-
-        [HttpGet]
-		public async Task<IActionResult> Index()
+		public VacancieController(AppDbContext dbContext,
+			IValidator<VacancieUpsertVm> validator,
+			IVacancieService vacancieService,
+			IResumeService resumeService,
+			IVacancieRespondService vacancieRespondService,
+			IJobseekerProfileService jobseekerProfileService,
+			IVacancieFilterService vacancieFilter)
 		{
-			var vacancies = _vacancieService.GetVacancieIndexVmList(await _dbContext.Vacancies.ToListAsync());
-			return View(vacancies);
+			_dbContext = dbContext;
+			_validator = validator;
+			_vacancieService = vacancieService;
+			_resumeService = resumeService;
+			_vacancieRespondService = vacancieRespondService;
+			_jobseekerProfileService = jobseekerProfileService;
+			_vacancieFilterService = vacancieFilter;
 		}
+
+		[HttpGet]
+		public async Task<IActionResult> Index(int? id, VacancieIndexListVm fromRequest)
+		{
+            IQueryable<Vacancie> vacancies;
+            if (fromRequest.Filter != null)
+            {
+                vacancies = _vacancieFilterService.ApplyFilter(fromRequest.Filter);
+            }
+            else
+            {
+                vacancies = _dbContext.Vacancies;
+            }
+
+            fromRequest.CurrentPage = id.HasValue ? id : 1;
+
+            const int PageSize = 1;
+			PaginatedList<Vacancie> paginatedVacancies;
+			try
+			{
+				paginatedVacancies = await PaginatedList<Vacancie>
+					.CreateAsync(vacancies, fromRequest.CurrentPage.Value, PageSize);
+            }
+			catch
+			{
+				return NotFound();
+			}
+
+            VacancieIndexListVm viewModel = new()
+            {
+                Vacancies = _vacancieService.GetVacancieIndexVmList(paginatedVacancies),
+                Filter = await _vacancieFilterService.PopulateFilter(fromRequest.Filter ?? new VacancieFilter()),
+				TotalVacancies = await vacancies.CountAsync(),
+				CurrentPage = fromRequest.CurrentPage,
+				IsPreviousDisabled = !paginatedVacancies.HasPreviousPage,
+				IsNextDisabled = !paginatedVacancies.HasNextPage,
+            };
+            return View(viewModel);
+        }
 
 		[HttpGet]
 		public async Task<IActionResult> Details(int id)
@@ -62,7 +102,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			if (User.IsJobseeker())
 			{
 				var jobseeker = await _jobseekerProfileService.GetUserProfile(User);
-				if(jobseeker == null)
+				if (jobseeker == null)
 				{
 					return NotFound();
 				}
@@ -128,7 +168,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				return NotFound();
 			}
-			if (! await _vacancieService.UserHasAccessTo(User, toUpdate))
+			if (!await _vacancieService.UserHasAccessTo(User, toUpdate))
 			{
 				return Forbid();
 			}
@@ -155,7 +195,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				return NotFound();
 			}
-			if (! await _vacancieService.UserHasAccessTo(User, toUpdate))
+			if (!await _vacancieService.UserHasAccessTo(User, toUpdate))
 			{
 				return Forbid();
 			}
@@ -187,7 +227,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				return NotFound();
 			}
-			if (! await _vacancieService.UserHasAccessTo(User, toDelete))
+			if (!await _vacancieService.UserHasAccessTo(User, toDelete))
 			{
 				return Forbid();
 			}
@@ -215,7 +255,7 @@ namespace JobSearchWebsite.MVC.Controllers
 			{
 				return NotFound();
 			}
-			if (! await _resumeService.UserHasAccessTo(User, resume))
+			if (!await _resumeService.UserHasAccessTo(User, resume))
 			{
 				return Forbid();
 			}
