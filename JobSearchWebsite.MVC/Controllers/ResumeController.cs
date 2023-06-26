@@ -60,7 +60,8 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int? id, ResumeIndexListVm fromRequest)
         {
-            IQueryable<Resume> resumes = _dbContext.Resumes.Where(r => r.IsPublished);
+            IQueryable<Resume> resumes = _dbContext.Resumes.Where(r => r.IsPublished)
+                .Include(r => r.Jobseeker);
 
             if(fromRequest.Filter != null)
             {

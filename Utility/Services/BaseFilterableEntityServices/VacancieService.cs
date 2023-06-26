@@ -27,10 +27,9 @@ namespace Utility.Services.BaseFilterableEntityServices
         {
             return vacancies.Select(v => new VacancieIndexVm()
             {
-                Id = v.Id,
-                Name = v.Name,
+                Vacancie = v,
                 ShortDescription = GetShortDescription(v.Description),
-                CreatedAgo = GetCreatedAgo(v.CreatedAt),
+                PublishedAgo = GetPublishedAgo(v.CreatedAt),
             }).ToList();
         }
 

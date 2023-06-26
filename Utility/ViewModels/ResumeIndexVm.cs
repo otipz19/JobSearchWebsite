@@ -1,10 +1,10 @@
-﻿namespace Utility.ViewModels
+﻿using Data.Entities;
+
+namespace Utility.ViewModels
 {
     public class ResumeIndexVm
     {
-        public int Id { get; set; }
-
-        public string Name { get; set; }
+        public Resume Resume { get; set; }
 
         public string ShortDescription { get; set; }
 

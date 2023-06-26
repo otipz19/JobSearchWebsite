@@ -140,15 +140,15 @@
                     <div class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">
-                                <a asp-action="Details" asp-route-id="@viewModel.Id" class="link-underline link-underline-opacity-0">@viewModel.Name</a>
+                                <a asp-action="Details" asp-route-id="@viewModel.Vacancie.Id" class="link-underline link-underline-opacity-0">@viewModel.Vacancie.Name</a>
                             </h5>
-                            <small>@viewModel.CreatedAgo</small>
+                            <small>@viewModel.PublishedAgo</small>
                         </div>
                         <p class="mb-1">
                             @viewModel.ShortDescription
                         </p>
                         <div>
-                            <a asp-action="Details" asp-route-id="@viewModel.Id" class="link-underline link-underline-opacity-0">Details</a>
+                            <a asp-action="Details" asp-route-id="@viewModel.Vacancie.Id" class="link-underline link-underline-opacity-0">Details</a>
                         </div>
                         <small class="text-muted">And some small print.</small>
                     </div>

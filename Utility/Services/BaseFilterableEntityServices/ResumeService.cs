@@ -25,9 +25,8 @@ namespace Utility.Services.BaseFilterableEntityServices
         {
             return resumes.Select(r => new ResumeIndexVm()
             {
-                Id = r.Id,
-                Name = r.Name,
-                CreatedAgo = GetCreatedAgo(r.CreatedAt),
+                Resume = r,
+                CreatedAgo = GetPublishedAgo(r.CreatedAt),
                 ShortDescription = GetShortDescription(r.Description),
             }).ToList();
         }

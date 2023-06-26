@@ -15,5 +15,7 @@ namespace Data.Entities
         public virtual List<State> States { get; set; } = new();
 
         public virtual List<City> Cities { get; set; } = new();
+
+        public int RespondsCount { get; set; }
     }
 }

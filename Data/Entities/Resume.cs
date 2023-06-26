@@ -20,5 +20,6 @@ namespace Data.Entities
 
         public virtual City City { get; set; }
 
-	}
+        public int OffersCount { get; set; }
+    }
 }

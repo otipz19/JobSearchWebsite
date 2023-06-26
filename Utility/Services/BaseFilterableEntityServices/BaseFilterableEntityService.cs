@@ -52,12 +52,12 @@ namespace Utility.Services.BaseFilterableEntityServices
             return $"{d.Substring(0, d.Length < ShortDescriptionLength ? d.Length : ShortDescriptionLength)}...";
         }
 
-        protected string GetCreatedAgo(DateTime createdAt)
+        protected string GetPublishedAgo(DateTime createdAt)
         {
             string str = createdAt.GetTimePassedString();
             if (str == "")
-                return "Just created";
-            return "Created" + str;
+                return "Just published";
+            return "Published" + str;
         }
 
         protected async Task<int> GetForeignKey<T>(int sourceId)

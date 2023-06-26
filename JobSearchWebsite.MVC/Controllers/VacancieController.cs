@@ -52,7 +52,9 @@ namespace JobSearchWebsite.MVC.Controllers
         [HttpGet]
 		public async Task<IActionResult> Index(int? id, VacancieIndexListVm fromRequest)
 		{
-            IQueryable<Vacancie> vacancies = _dbContext.Vacancies.Where(v => v.IsPublished);
+            IQueryable<Vacancie> vacancies = _dbContext.Vacancies.Where(v => v.IsPublished)
+				.Include(v => v.Company);
+
             if (fromRequest.Filter != null)
             {
                 vacancies = _vacancieFilterService.ApplyFilter(vacancies, fromRequest.Filter);

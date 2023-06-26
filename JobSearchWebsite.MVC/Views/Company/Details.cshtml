@@ -42,10 +42,10 @@
             </a>
             @foreach (VacancieIndexVm vacancie in Model.Vacancies)
             {
-                <a asp-controller="Vacancie" asp-action="Details" asp-route-id="@vacancie.Id" class="list-group-item list-group-item-action">
+                <a asp-controller="Vacancie" asp-action="Details" asp-route-id="@vacancie.Vacancie.Id" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">@vacancie.Name</h5>
-                        <small>@vacancie.CreatedAgo</small>
+                        <h5 class="mb-1">@vacancie.Vacancie.Name</h5>
+                        <small>@vacancie.PublishedAgo</small>
                     </div>
                     <p class="mb-1">@vacancie.ShortDescription</p>
                     <small class="text-muted">And some small print.</small>

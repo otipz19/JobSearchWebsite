@@ -135,9 +135,9 @@
             <div class="list-group">
                 @foreach (ResumeIndexVm viewModel in Model.Items)
                 {
-                    <a asp-action="Details" asp-route-id="@viewModel.Id" class="list-group-item list-group-item-action">
+                    <a asp-action="Details" asp-route-id="@viewModel.Resume.Id" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">@viewModel.Name</h5>
+                            <h5 class="mb-1">@viewModel.Resume.Name</h5>
                             <small>@viewModel.CreatedAgo</small>
                         </div>
                         <p class="mb-1">@viewModel.ShortDescription</p>

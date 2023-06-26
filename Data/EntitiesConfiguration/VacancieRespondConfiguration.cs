@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Laraue.EfCoreTriggers.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.EntitiesConfiguration
@@ -21,6 +22,20 @@ namespace Data.EntitiesConfiguration
 
 			builder.Property(x => x.CreatedAt)
 				.HasDefaultValueSql("CURRENT_TIMESTAMP");
-		}
+
+            builder.AfterInsert(trigger => trigger
+                .Action(action => action
+                    .Update<Vacancie>(
+                        (tableRefs, vacancie) => tableRefs.New.VacancieId == vacancie.Id,
+                        (tableRefs, vacancie) => new Vacancie() { RespondsCount = vacancie.RespondsCount + 1 })
+                ));
+
+            builder.AfterDelete(trigger => trigger
+                .Action(action => action
+                    .Update<Vacancie>(
+                        (tableRefs, vacancie) => tableRefs.Old.VacancieId == vacancie.Id,
+                        (tableRefs, vacancie) => new Vacancie() { RespondsCount = vacancie.RespondsCount - 1 })
+                ));
+        }
 	}
 }
