@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Data.Entities.Base.BaseEntity">
+    <Position X="6.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Base\BaseEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Base.BaseNamedEntity">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Base\BaseNamedEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Base.BaseFilteringEntity">
+    <Position X="2.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Base\BaseFilteringEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Base.BaseFilterableEntity">
+    <Position X="6.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAEggAgAAEAQAAAAAAAAAAAAAAAAABAAAgGA=</HashCode>
+      <FileName>Entities\Base\BaseFilterableEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Base.BaseProfileEntity">
+    <Position X="11.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAEAAAAEAIIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Base\BaseProfileEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Company">
+    <Position X="10.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Company.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Jobseeker">
+    <Position X="12.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Entities\Jobseeker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Vacancie">
+    <Position X="7.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FAAAAAAAAAIAAAAAAAAAAAAAAAAAACAAAAAABAAAAAA=</HashCode>
+      <FileName>Entities\Vacancie.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Resume">
+    <Position X="5.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQBQAAAAAAIAAAAAAAAAAAAAAAAAAAABABCABA=</HashCode>
+      <FileName>Entities\Resume.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Keyword">
+    <Position X="1" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Entities\Keyword.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.City">
+    <Position X="3.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\City.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.State">
+    <Position X="3.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\State.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Specialization">
+    <Position X="3.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Specialization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Sphere">
+    <Position X="1" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Sphere.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.Remoteness">
+    <Position X="1" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Remoteness.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.ExperienceLevel">
+    <Position X="1" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\ExperienceLevel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.EnglishLevel">
+    <Position X="3.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\EnglishLevel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.AppUser">
+    <Position X="11.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\AppUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.VacancieRespond">
+    <Position X="12" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAAAAFAAAAAAAACCAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>Entities\VacancieRespond.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Data.Entities.JobOffer">
+    <Position X="9.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAAAAFAAIAAAAACCAAAAAAAAAAAAAAAAAAJAgAAAA=</HashCode>
+      <FileName>Entities\JobOffer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.AspNetCore.Identity.IdentityUser">
+    <Position X="9" Y="1" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

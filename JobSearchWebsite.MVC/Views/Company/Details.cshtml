@@ -37,6 +37,9 @@
     </div>
     <div class="row">
         <div class="list-group">
+            <a asp-controller="Vacancie" asp-action="Create" class="list-group-item btn btn-primary text-center">
+                <span class="display-5"><i class="fa-solid fa-plus"></i> Create new</span>
+            </a>
             @foreach (VacancieIndexVm vacancie in Model.Vacancies)
             {
                 <a asp-controller="Vacancie" asp-action="Details" asp-route-id="@vacancie.Id" class="list-group-item list-group-item-action">

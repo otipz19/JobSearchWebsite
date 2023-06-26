@@ -1,7 +1,7 @@
 ﻿@using Utility.Services.Checkbox;
 @model Utility.ViewModels.IndexCheckboxPartialVm
 
-<div class="row mb-3">
+@*<div class="row mb-3">
     <label class="form-label">@Model.Label</label>
     <div class="row ms-1">
         @foreach (CheckboxOption checkbox in Model.CheckboxOptions)
@@ -11,5 +11,26 @@
                 <label for="CheckboxKeywords" class="form-check-label">@checkbox.Text</label>
             </div>
         }
+    </div>
+</div>*@
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed ps-0" type="button" data-bs-toggle="collapse" data-bs-target="#@Model.AccordionId" aria-expanded="false">
+            @Model.Label
+        </button>
+    </h2>
+    <div id="@Model.AccordionId" class="accordion-collapse collapse" data-bs-parent="#accordion">
+        <div class="accordion-body">
+            <div class="row">
+                @foreach (CheckboxOption checkbox in Model.CheckboxOptions)
+                {
+                    <div class="form-check col-auto">
+                        <input type="checkbox" value="@checkbox.Value" name="@Model.InputName" id="@checkbox.Value" checked="@checkbox.IsChecked" class="form-check-input" />
+                        <label for="CheckboxKeywords" class="form-check-label">@checkbox.Text</label>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>

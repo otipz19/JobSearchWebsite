@@ -3,7 +3,7 @@ using Utility.Services.Checkbox;
 
 namespace Utility.Services.FilterServices
 {
-    public class VacancieFilter
+    public class VacancieResumeFilter
     {
         public string SearchQuery { get; set; }
 

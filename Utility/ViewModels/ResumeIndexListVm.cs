@@ -3,9 +3,9 @@ using Utility.Services.OrderServices;
 
 namespace Utility.ViewModels
 {
-    public class VacancieIndexListVm
+    public class ResumeIndexListVm
 	{
-        public IEnumerable<VacancieIndexVm> Items { get; set; }
+        public IEnumerable<ResumeIndexVm> Items { get; set; }
 
         public VacancieResumeFilter Filter { get; set; }
 

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Data;
 namespace JobSearchWebsite.MVC
 {
     public class Program
@@ -10,14 +7,17 @@ namespace JobSearchWebsite.MVC
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews()
-                .AddRazorRuntimeCompilation();
+            var mvcBuilder = builder.Services.AddControllersWithViews();
+            if (builder.Environment.IsDevelopment())
+            {
+                mvcBuilder.AddRazorRuntimeCompilation();
+            }
 
             builder.Services.AddAppDbContext(builder.Configuration)
 				.AddFluentValidators()
                 .AddIdentity()
                 .AddAuthorizationRoles()
-                .AddMyServices();
+                .AddServices();
 
             var app = builder.Build();
 

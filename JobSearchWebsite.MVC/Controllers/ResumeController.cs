@@ -9,8 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Utility.Interfaces.BaseFilterableEntityServices;
 using Utility.Interfaces.FileUpload.Document;
+using Utility.Interfaces.FilterServices;
+using Utility.Interfaces.OrderServices;
 using Utility.Interfaces.Profile;
 using Utility.Interfaces.Responds;
+using Utility.Services.FilterServices;
+using Utility.Services.Pagination;
 using Utility.Toaster;
 using Utility.Utilities;
 using Utility.ViewModels;
@@ -27,6 +31,8 @@ namespace JobSearchWebsite.MVC.Controllers
         private readonly ICompanyProfileService _companyProfileService;
         private readonly IVacancieService _vacancieService;
         private readonly IJobOfferService _jobOfferService;
+        private readonly IResumeFilterService _filterService;
+        private readonly IResumeOrderService _orderService;
 
         public ResumeController(AppDbContext dbContext,
             IResumeService resumeService,
@@ -35,7 +41,9 @@ namespace JobSearchWebsite.MVC.Controllers
             ICompanyProfileService companyProfileService,
             IValidator<ResumeDetailsVm> validatorDetails,
             IVacancieService vacancieService,
-            IJobOfferService jobOfferService)
+            IJobOfferService jobOfferService,
+            IResumeFilterService filterService,
+            IResumeOrderService orderService)
         {
             _dbContext = dbContext;
             _resumeService = resumeService;
@@ -45,19 +53,59 @@ namespace JobSearchWebsite.MVC.Controllers
             _validatorDetails = validatorDetails;
             _vacancieService = vacancieService;
             _jobOfferService = jobOfferService;
+            _filterService = filterService;
+            _orderService = orderService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id, ResumeIndexListVm fromRequest)
         {
-            var resumes = _resumeService.GetResumeIndexVmList(await _dbContext.Resumes.ToListAsync());
-            return View(resumes);
+            IQueryable<Resume> resumes = _dbContext.Resumes.Where(r => r.IsPublished);
+
+            if(fromRequest.Filter != null)
+            {
+                resumes = _filterService.ApplyFilter(resumes, fromRequest.Filter);
+            }
+
+            if (fromRequest.Order != null)
+            {
+                resumes = _orderService.Order(resumes, fromRequest.Order);
+            }
+            else
+            {
+                resumes = resumes.OrderByDescending(v => v.PublishedAt);
+            }
+
+            fromRequest.CurrentPage = id.HasValue ? id : 1;
+
+            const int PageSize = 10;
+            PaginatedList<Resume> paginatedResumes;
+            try
+            {
+                paginatedResumes = await PaginatedList<Resume>
+                    .CreateAsync(resumes, fromRequest.CurrentPage.Value, PageSize);
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            ResumeIndexListVm viewModel = new()
+            {
+                Items = _resumeService.GetResumeIndexVmList(paginatedResumes),
+                Filter = await _filterService.PopulateFilter(fromRequest.Filter ?? new VacancieResumeFilter()),
+                TotalCount = await resumes.CountAsync(),
+                CurrentPage = fromRequest.CurrentPage,
+                IsPreviousDisabled = !paginatedResumes.HasPreviousPage,
+                IsNextDisabled = !paginatedResumes.HasNextPage,
+            };
+            return View(viewModel);
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            Resume resume = await _resumeService.EagerLoadAsNoTracking(id);
+            Resume resume = await _resumeService.EagerLoad(id);
             if (resume == null)
             {
                 return NotFound();
@@ -77,7 +125,12 @@ namespace JobSearchWebsite.MVC.Controllers
                 viewModel.AvailableVacancies = await _dbContext.Vacancies.AsNoTracking()
                     .Where(v => v.CompanyId == company.Id)
                     .ToListAsync();
+
+                resume.CountWatched++;
+                _dbContext.Resumes.Update(resume);
+                await _dbContext.SaveChangesAsync();
             }
+
             return View(viewModel);
         }
 
@@ -135,6 +188,9 @@ namespace JobSearchWebsite.MVC.Controllers
                     return View(viewModel);
                 }
             }
+
+            resume.IsPublished = true;
+            resume.PublishedAt = DateTime.Now;
 
             _dbContext.Resumes.Add(resume);
             await _dbContext.SaveChangesAsync();

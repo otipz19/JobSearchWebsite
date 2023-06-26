@@ -24,6 +24,8 @@ using Utility.Interfaces.FilterServices;
 using Utility.Services.FilterServices;
 using Utility.Interfaces.Checkbox;
 using Utility.Services.Checkbox;
+using Utility.Interfaces.OrderServices;
+using Utility.Services.OrderServices;
 
 namespace JobSearchWebsite.MVC
 {
@@ -66,7 +68,7 @@ namespace JobSearchWebsite.MVC
             });
         }
 
-        public static IServiceCollection AddMyServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services)
         {
             return services.AddScoped<IJobseekerProfileService, JobseekerProfileService>()
                 .AddScoped<ICompanyProfileService, CompanyProfileService>()
@@ -78,7 +80,10 @@ namespace JobSearchWebsite.MVC
                 .AddScoped<IVacancieRespondService, VacancieRespondService>()
                 .AddScoped<IJobOfferService, JobOfferService>()
                 .AddScoped<IVacancieFilterService, VacancieFilterService>()
-                .AddScoped<ICheckboxService, CheckboxService>();
+                .AddScoped<IResumeFilterService, ResumeFilterService>()
+                .AddScoped<ICheckboxService, CheckboxService>()
+                .AddScoped<IVacancieOrderService, VacancieOrderService>()
+                .AddScoped<IResumeOrderService, ResumeOrderService>();
         }
     }
 }

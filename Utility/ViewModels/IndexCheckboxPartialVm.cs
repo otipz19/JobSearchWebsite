@@ -16,5 +16,7 @@ namespace Utility.ViewModels
         public string Label { get; set; }
 
         public string InputName { get; set; }
+
+        public string AccordionId { get; set; }
     }
 }

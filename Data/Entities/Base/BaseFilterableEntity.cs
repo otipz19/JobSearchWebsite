@@ -4,7 +4,7 @@ namespace Data.Entities.Base
 {
 	public abstract class BaseFilterableEntity : BaseNamedEntity
 	{
-		[Required]
+        [Required]
 		public string Description { get; set; }
 
 		public int SphereId { get; set; }
@@ -32,5 +32,12 @@ namespace Data.Entities.Base
 		public virtual List<VacancieRespond> VacancieResponds { get; set; } = new();
 
 		public virtual List<JobOffer> JobOffers { get; set; } = new();
-	}
+
+
+        public bool IsPublished { get; set; }
+
+        public DateTime? PublishedAt { get; set; }
+
+        public int CountWatched { get; set; }
+    }
 }

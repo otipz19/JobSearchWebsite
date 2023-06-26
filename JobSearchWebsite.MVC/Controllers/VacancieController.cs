@@ -10,14 +10,12 @@ using System.Security.Claims;
 using Utility.Toaster;
 using Utility.Utilities;
 using Utility.Interfaces.BaseFilterableEntityServices;
-using Data.Enums;
 using Utility.Interfaces.Responds;
 using Utility.Interfaces.Profile;
-using System.Reflection;
-using Microsoft.IdentityModel.Tokens;
 using Utility.Interfaces.FilterServices;
 using Utility.Services.FilterServices;
 using Utility.Services.Pagination;
+using Utility.Interfaces.OrderServices;
 
 namespace JobSearchWebsite.MVC.Controllers
 {
@@ -30,40 +28,48 @@ namespace JobSearchWebsite.MVC.Controllers
 		private readonly IVacancieRespondService _vacancieRespondService;
 		private readonly IJobseekerProfileService _jobseekerProfileService;
 		private readonly IVacancieFilterService _vacancieFilterService;
+		private readonly IVacancieOrderService _orderService;
 
-		public VacancieController(AppDbContext dbContext,
-			IValidator<VacancieUpsertVm> validator,
-			IVacancieService vacancieService,
-			IResumeService resumeService,
-			IVacancieRespondService vacancieRespondService,
-			IJobseekerProfileService jobseekerProfileService,
-			IVacancieFilterService vacancieFilter)
-		{
-			_dbContext = dbContext;
-			_validator = validator;
-			_vacancieService = vacancieService;
-			_resumeService = resumeService;
-			_vacancieRespondService = vacancieRespondService;
-			_jobseekerProfileService = jobseekerProfileService;
-			_vacancieFilterService = vacancieFilter;
-		}
+        public VacancieController(AppDbContext dbContext,
+            IValidator<VacancieUpsertVm> validator,
+            IVacancieService vacancieService,
+            IResumeService resumeService,
+            IVacancieRespondService vacancieRespondService,
+            IJobseekerProfileService jobseekerProfileService,
+            IVacancieFilterService vacancieFilter,
+            IVacancieOrderService orderService)
+        {
+            _dbContext = dbContext;
+            _validator = validator;
+            _vacancieService = vacancieService;
+            _resumeService = resumeService;
+            _vacancieRespondService = vacancieRespondService;
+            _jobseekerProfileService = jobseekerProfileService;
+            _vacancieFilterService = vacancieFilter;
+            _orderService = orderService;
+        }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Index(int? id, VacancieIndexListVm fromRequest)
 		{
-            IQueryable<Vacancie> vacancies;
+            IQueryable<Vacancie> vacancies = _dbContext.Vacancies.Where(v => v.IsPublished);
             if (fromRequest.Filter != null)
             {
-                vacancies = _vacancieFilterService.ApplyFilter(fromRequest.Filter);
+                vacancies = _vacancieFilterService.ApplyFilter(vacancies, fromRequest.Filter);
             }
-            else
-            {
-                vacancies = _dbContext.Vacancies;
-            }
+
+			if(fromRequest.Order != null)
+			{
+				vacancies = _orderService.Order(vacancies, fromRequest.Order);
+			}
+			else
+			{
+				vacancies = vacancies.OrderByDescending(v => v.PublishedAt);
+			}
 
             fromRequest.CurrentPage = id.HasValue ? id : 1;
 
-            const int PageSize = 1;
+            const int PageSize = 10;
 			PaginatedList<Vacancie> paginatedVacancies;
 			try
 			{
@@ -77,9 +83,9 @@ namespace JobSearchWebsite.MVC.Controllers
 
             VacancieIndexListVm viewModel = new()
             {
-                Vacancies = _vacancieService.GetVacancieIndexVmList(paginatedVacancies),
-                Filter = await _vacancieFilterService.PopulateFilter(fromRequest.Filter ?? new VacancieFilter()),
-				TotalVacancies = await vacancies.CountAsync(),
+                Items = _vacancieService.GetVacancieIndexVmList(paginatedVacancies),
+                Filter = await _vacancieFilterService.PopulateFilter(fromRequest.Filter ?? new VacancieResumeFilter()),
+				TotalCount = await vacancies.CountAsync(),
 				CurrentPage = fromRequest.CurrentPage,
 				IsPreviousDisabled = !paginatedVacancies.HasPreviousPage,
 				IsNextDisabled = !paginatedVacancies.HasNextPage,
@@ -109,6 +115,10 @@ namespace JobSearchWebsite.MVC.Controllers
 				viewModel.AvailableResumes = await _dbContext.Resumes.AsNoTracking()
 					.Where(r => r.JobseekerId == jobseeker.Id)
 					.ToListAsync();
+
+				vacancie.CountWatched++;
+				_dbContext.Vacancies.Update(vacancie);
+				await _dbContext.SaveChangesAsync();
 			}
 			return View(viewModel);
 		}
@@ -152,6 +162,9 @@ namespace JobSearchWebsite.MVC.Controllers
 				return NotFound();
 			}
 			vacancie.Company = company;
+
+			vacancie.IsPublished = true;
+			vacancie.PublishedAt = DateTime.Now;
 
 			_dbContext.Vacancies.Add(vacancie);
 			await _dbContext.SaveChangesAsync();

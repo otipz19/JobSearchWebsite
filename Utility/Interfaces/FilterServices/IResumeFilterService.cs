@@ -3,7 +3,7 @@ using Utility.Services.FilterServices;
 
 namespace Utility.Interfaces.FilterServices
 {
-    public interface IVacancieFilterService : IFilterService<Vacancie>
+    public interface IResumeFilterService : IFilterService<Resume>
 	{
 	}
 }
