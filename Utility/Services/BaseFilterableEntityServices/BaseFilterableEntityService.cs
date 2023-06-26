@@ -1,7 +1,9 @@
 ﻿using Ardalis.GuardClauses;
 using Data;
 using Data.Entities.Base;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Text;
 using Utility.Utilities;
@@ -46,13 +48,83 @@ namespace Utility.Services.BaseFilterableEntityServices
             return query;
         }
 
-        protected string GetShortDescription(string d)
-        {
-            const int ShortDescriptionLength = 350;
-            return $"{d.Substring(0, d.Length < ShortDescriptionLength ? d.Length : ShortDescriptionLength)}...";
-        }
+        protected string GetShortDescription(string source)
+		{
+			const int ShortDescriptionLength = 350;
+			string shortDesc = $"{source.Substring(0, source.Length < ShortDescriptionLength ? source.Length : ShortDescriptionLength)}...";
 
-        protected string GetPublishedAgo(DateTime createdAt)
+			return CloseHtmlTags(shortDesc);
+		}
+
+		private string CloseHtmlTags(string shortDesc)
+		{
+			Dictionary<string, int> openedTags = new();
+
+			int? curOpenBracket = null;
+			int? curSlash = null;
+			for (int i = 0; i < shortDesc.Length; i++)
+			{
+				if (shortDesc[i] == '<')
+				{
+					curOpenBracket = i;
+				}
+				if (shortDesc[i] == '/')
+				{
+					curSlash = i;
+				}
+				else if (shortDesc[i] == '>')
+				{
+					if (curOpenBracket.HasValue && curSlash.HasValue)
+					{
+						//Get only content of
+						int indexOfContentStart = curOpenBracket.Value + 2;
+						int contentLength = i - indexOfContentStart;
+						if (contentLength > 0)
+						{
+							string tag = shortDesc.Substring(indexOfContentStart, contentLength);
+							//Not empty tag
+							if (tag.Length > 0)
+							{
+								if (openedTags.ContainsKey(tag) && openedTags[tag] > 0)
+									openedTags[tag]--;
+							}
+						}
+						curOpenBracket = null;
+						curSlash = null;
+					}
+					if (curOpenBracket.HasValue)
+					{
+						//Get only content of tag
+						int indexOfContentStart = curOpenBracket.Value + 1;
+						int contentLength = i - indexOfContentStart;
+						if (contentLength > 0)
+						{
+							string tag = shortDesc.Substring(indexOfContentStart, contentLength);
+							//Not empty tag
+							if (tag.Length > 0)
+							{
+								if (openedTags.ContainsKey(tag))
+									openedTags[tag]++;
+								else
+									openedTags[tag] = 1;
+							}
+						}
+						curOpenBracket = null;
+					}
+				}
+			}
+
+			StringBuilder builder = new StringBuilder(shortDesc);
+			foreach (var tag in openedTags.Keys.Where(k => openedTags[k] > 0))
+			{
+				builder.Append("</");
+				builder.Append(tag);
+				builder.Append(">");
+			}
+			return builder.ToString();
+		}
+
+		protected string GetPublishedAgo(DateTime createdAt)
         {
             string str = createdAt.GetTimePassedString();
             if (str == "")

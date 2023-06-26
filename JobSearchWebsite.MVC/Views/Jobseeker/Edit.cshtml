@@ -15,7 +15,7 @@
                 </div>
                 <div class="form-group mb-3">
                     <label asp-for="About" class="form-label"></label>
-                    <textarea asp-for="About" class="form-control"></textarea>
+                    <textarea id="editor" asp-for="About" class="form-control ck-editor__editable"></textarea>
                     <span asp-validation-for="About" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
@@ -37,4 +37,14 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial"></partial>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                removePlugins: ['Link', 'CKFinder'],
+                toolbar: ['heading', 'bold', 'italic', 'bulletedList', 'numberedList']
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    </script>
 }

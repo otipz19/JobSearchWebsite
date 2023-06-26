@@ -29,7 +29,7 @@
     </div>
     <div class="row">
         <div class="col-6">
-            <p>@Model.Company.About</p>
+            <p>@Html.Raw(Model.Company.About)</p>
         </div>
         <div class="col-6">
             <img class="img-fluid" src="@Model.Company.ImagePath"/>
@@ -47,7 +47,7 @@
                         <h5 class="mb-1">@vacancie.Vacancie.Name</h5>
                         <small>@vacancie.PublishedAgo</small>
                     </div>
-                    <p class="mb-1">@vacancie.ShortDescription</p>
+                    <p class="mb-1">@Html.Raw(vacancie.ShortDescription)</p>
                     <small class="text-muted">And some small print.</small>
                 </a>
             }

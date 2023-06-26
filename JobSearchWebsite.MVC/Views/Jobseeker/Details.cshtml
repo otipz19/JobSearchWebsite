@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col-6">
             <p>@Model.Name</p>
-            <p>@Model.About</p>
+            <p>@Html.Raw(Model.About)</p>
         </div>
         <div class="col-6">
             <img class="img-fluid" src="@Model.ImagePath"/>
