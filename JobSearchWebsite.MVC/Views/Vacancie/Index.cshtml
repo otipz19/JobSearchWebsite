@@ -2,6 +2,7 @@
 @using Data.Enums;
 @using Utility.Services.Checkbox;
 @using Utility.Services.OrderServices;
+@inject Utility.Interfaces.Profile.ICompanyProfileService ProfileService;
 @model Utility.ViewModels.VacancieIndexListVm
 @{
     ViewData["Title"] = "Index";
@@ -171,8 +172,11 @@
                        
                             <div class="card-footer">
                                 <div class="d-flex justify-content-start gap-3 align-items-top">
-                                    <img class="rounded-circle" style="width:50px; height: 50px;" src="@viewModel.Vacancie.Company.ImagePath">
-                                    <a asp-controller="Company" asp-action="Details" asp-route-Id="@viewModel.Vacancie.CompanyId" class="link-underline link-underline-opacity-0">@viewModel.Vacancie.Company.Name</a>
+                                    <img class="rounded-circle" style="width:50px; height: 50px;" src="@ProfileService.GetImageSource(viewModel.Vacancie.Company)">
+                                    <div class="d-flex flex-column justify-content-evenly">
+                                        <a asp-controller="Company" asp-action="Details" asp-route-Id="@viewModel.Vacancie.CompanyId" class="link-underline link-underline-opacity-0">@viewModel.Vacancie.Company.Name</a>
+                                        <label><i class="fa-solid fa-envelope"></i> @viewModel.Vacancie.Company.AppUser.Email</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

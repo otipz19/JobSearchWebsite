@@ -17,7 +17,8 @@ namespace JobSearchWebsite.MVC
 				.AddFluentValidators()
                 .AddIdentity()
                 .AddAuthorizationRoles()
-                .AddServices();
+                .AddServices()
+                .AddOptions(builder.Configuration);
 
             var app = builder.Build();
 

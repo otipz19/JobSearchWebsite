@@ -61,26 +61,6 @@ namespace JobSearchWebsite.MVC.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Details(int resumeId, int vacancieId)
-		{
-			VacancieRespond respond = await _dbContext.VacancieResponds.AsNoTracking()
-				.Include(r => r.Resume)
-				.Include(r => r.Vacancie)
-				.FirstOrDefaultAsync(r => r.ResumeId == resumeId && r.VacancieId == vacancieId);
-			if(respond == null)
-			{
-				return NotFound();
-			}
-			//If user has no access to this vacancie respond
-			if(! (await _resumeService.UserHasAccessTo(User, respond.Resume) ||
-				await _vacancieService.UserHasAccessTo(User, respond.Vacancie)))
-			{
-				return Forbid();
-			}
-			return View(_vacancieRespondService.GetDetailsVm(respond));
-		}
-
-		[HttpGet]
 		[Authorize(Policy = Constants.JobseekerPolicy)]
 		public async Task<IActionResult> RespondsOfResume(int id)
 		{
@@ -179,10 +159,10 @@ namespace JobSearchWebsite.MVC.Controllers
 			catch
 			{
 				TempData.Toaster().Error("This respond has been already considered");
-				return RedirectToAction(nameof(Details), new { respond.ResumeId, respond.VacancieId });
+				return RedirectToAction(nameof(Index));
 			}
 
-			return RedirectToAction(nameof(Details), new { respond.ResumeId, respond.VacancieId });
+			return RedirectToAction(nameof(Index));
 		}
 	}
 }

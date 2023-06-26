@@ -10,6 +10,8 @@ using Utility.Interfaces.Responds;
 using Utility.ViewModels;
 using Utility.Utilities;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Utility.Interfaces.EmailSending;
 
 namespace Utility.Services.Responds
 {
@@ -17,14 +19,18 @@ namespace Utility.Services.Responds
 	{
 		private readonly AppDbContext _dbContext;
 		private readonly IVacancieService _vacancieService;
+		private readonly IEmailSenderService _emailSender;
 
-		public VacancieRespondService(AppDbContext dbContext, IVacancieService vacancieService)
-		{
-			_dbContext = dbContext;
-			_vacancieService = vacancieService;
-		}
+        public VacancieRespondService(AppDbContext dbContext,
+			IVacancieService vacancieService,
+			IEmailSenderService emailSender)
+        {
+            _dbContext = dbContext;
+            _vacancieService = vacancieService;
+            _emailSender = emailSender;
+        }
 
-		public async Task CreateVacancieRespond(int resumeId, int vacancieId)
+        public async Task CreateVacancieRespond(int resumeId, int vacancieId)
 		{
 			VacancieRespond vacancieRespond = await _dbContext.VacancieResponds.AsNoTracking()
 				.FirstOrDefaultAsync(r => r.ResumeId == resumeId && r.VacancieId == vacancieId);
@@ -73,6 +79,9 @@ namespace Utility.Services.Responds
             Guard.Against.Null(vacancie);
 
             vacancie.VacancieResponds = await _dbContext.VacancieResponds
+				.Include(r => r.Resume)
+					.ThenInclude(v => v.Jobseeker)
+						.ThenInclude(c => c.AppUser)
 				.Where(respond => respond.VacancieId == vacancie.Id && respond.ResumeId == resumeId)
 				.ToListAsync();
 
@@ -94,6 +103,8 @@ namespace Utility.Services.Responds
 			respond.StatusChangedAt = DateTime.Now;
 			_dbContext.VacancieResponds.Update(respond);
 			await _dbContext.SaveChangesAsync();
+
+			await _emailSender.SendVacancieRespondChangedStatus(respond);
 		}
 
 		public VacancieRespondIndexVm GetIndexVm(IEnumerable<VacancieRespond> responds, Vacancie vacancie = null, Resume resume = null)

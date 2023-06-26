@@ -64,26 +64,6 @@ namespace JobSearchWebsite.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int resumeId, int companyId)
-        {
-            JobOffer jobOffer = await _dbContext.JobOffers.AsNoTracking()
-                .Include(o => o.Resume)
-                .Include(o => o.Company)
-                .Include(o => o.Vacancie)
-                .FirstOrDefaultAsync(o => o.ResumeId == resumeId && o.CompanyId == companyId);
-            if (jobOffer == null)
-            {
-                return NotFound();
-            }
-            if (!(await _resumeService.UserHasAccessTo(User, jobOffer.Resume) ||
-                await _companyProfileService.UserOwnsProfile(User, jobOffer.Company)))
-            {
-                return Forbid();
-            }
-            return View(_jobOfferService.GetDetailsVm(jobOffer));
-        }
-
-        [HttpGet]
         [Authorize(Policy = Constants.JobseekerPolicy)]
         public async Task<IActionResult> OffersForResume(int id)
         {
@@ -183,10 +163,10 @@ namespace JobSearchWebsite.MVC.Controllers
             catch
             {
                 TempData.Toaster().Error("This offer has been already considered");
-                return RedirectToAction(nameof(Details), new { offer.ResumeId, offer.CompanyId });
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Details), new { offer.ResumeId, offer.CompanyId });
+            return RedirectToAction(nameof(Index));
         }
     }
 }

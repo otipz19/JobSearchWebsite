@@ -28,5 +28,15 @@ namespace Utility.Services.Profile
             return await _dbContext.Set<T>()
                 .FirstOrDefaultAsync(p => p.AppUserId == user.FindFirstValue(ClaimTypes.NameIdentifier));
         }
+
+        protected string GetImageSource(T profile, string defaultSrc) 
+        {
+            string src = profile.ImagePath;
+            if (string.IsNullOrEmpty(src))
+            {
+                src = defaultSrc;
+            }
+            return src;
+        }
     }
 }

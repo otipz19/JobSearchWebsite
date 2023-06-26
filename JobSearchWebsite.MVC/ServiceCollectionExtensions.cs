@@ -26,6 +26,10 @@ using Utility.Interfaces.Checkbox;
 using Utility.Services.Checkbox;
 using Utility.Interfaces.OrderServices;
 using Utility.Services.OrderServices;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Utility.Interfaces.EmailSending;
+using Utility.Services.EmailSending;
+using Utility.Settings;
 
 namespace JobSearchWebsite.MVC
 {
@@ -83,7 +87,14 @@ namespace JobSearchWebsite.MVC
                 .AddScoped<IResumeFilterService, ResumeFilterService>()
                 .AddScoped<ICheckboxService, CheckboxService>()
                 .AddScoped<IVacancieOrderService, VacancieOrderService>()
-                .AddScoped<IResumeOrderService, ResumeOrderService>();
+                .AddScoped<IResumeOrderService, ResumeOrderService>()
+                .AddScoped<IEmailSender, EmailSenderService>()
+                .AddScoped<IEmailSenderService, EmailSenderService>();
+        }
+
+        public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services.Configure<MailjetSettings>(configuration.GetSection(MailjetSettings.Section));
         }
     }
 }

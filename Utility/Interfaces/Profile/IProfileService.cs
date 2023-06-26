@@ -12,5 +12,7 @@ namespace Utility.Interfaces.Profile
         public Task<bool> UserOwnsProfile(ClaimsPrincipal user, T profile);
 
         public Task<T> GetUserProfile(ClaimsPrincipal user);
+
+        public string GetImageSource(T profile);
     }
 }

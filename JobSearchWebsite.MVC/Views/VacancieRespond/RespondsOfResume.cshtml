@@ -15,41 +15,7 @@
             @foreach (VacancieRespondDetailsVm viewModel in Model.VacancieRepsonds)
             {
                 <div class="list-group-item">
-                    <div class="d-flex flex-row w-100 justify-content-between">
-                        <div class="">
-                            <label>Vacancie: </label>
-                            <a asp-controller="Vacancie" asp-action="Details" asp-route-Id="@viewModel.VacancieRespond.Vacancie.Id">@viewModel.VacancieRespond.Vacancie.Name</a>
-                        </div>
-                         <div>
-                            @{
-                                string badgeStyle = viewModel.VacancieRespond.Status switch
-                                {
-                                    RespondStatus.Accepted => "bg-success",
-                                    RespondStatus.Rejected => "bg-danger",
-                                    _ => "bg-primary",
-                                };
-                            }
-                            <span class="badge @badgeStyle">@viewModel.VacancieRespond.Status.ToString()</span>
-                         </div>   
-                    </div>
-
-                    <div class="d-flex flex-row w-100 justify-content-between">
-                        <div class="">
-                            <label>Resume: </label>
-                            <a class="muted" asp-controller="Resume" asp-action="Details" asp-route-Id="@viewModel.VacancieRespond.Resume.Id">@viewModel.VacancieRespond.Resume.Name</a>
-                        </div>
-                    </div>
-
-                     <div class="d-flex flex-row w-100 justify-content-between align-items-end"> 
-                        <div class="d-flex flex-column justify-content-end">
-                            <small>@viewModel.SentAgo</small>
-                            @if (viewModel.VacancieRespond.Status != RespondStatus.Pending)
-                            {
-                                <small>@viewModel.AnsweredAgo</small>
-                            }
-                        </div>
-                        <a asp-action="Details" asp-route-resumeId="@viewModel.VacancieRespond.ResumeId" asp-route-vacancieId="@viewModel.VacancieRespond.VacancieId" class="btn btn-outline-primary">Details</a>
-                    </div>
+                    <partial name="_VacancieRespondCard" model="viewModel" />
                 </div>
             }
         </div>

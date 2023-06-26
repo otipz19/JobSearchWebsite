@@ -19,5 +19,10 @@ namespace Utility.Services.Profile
             await _dbContext.SaveChangesAsync();
             return profile;
         }
+
+        public string GetImageSource(Company profile)
+        {
+            return base.GetImageSource(profile, @"https://www.pngfind.com/pngs/m/665-6659827_enterprise-comments-default-company-logo-png-transparent-png.png");
+        }
     }
 }

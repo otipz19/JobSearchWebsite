@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Data.Entities.Company>
+@inject Utility.Interfaces.Profile.ICompanyProfileService ProfileService;
 @{
     ViewData["Title"] = "Index";
 }
@@ -10,7 +11,7 @@
         {
             <a asp-action="Details" asp-route-id="@company.Id" class="list-group-item list-group-item-action">
                 <div class="d-flex w-100 justify-content-start">
-                    <img class="rounded-circle" style="width:100px; height: 100px;" src="@company.ImagePath">
+                    <img class="rounded-circle" style="width:100px; height: 100px;" src="@ProfileService.GetImageSource(company)">
                     <h5 class="mb-1">@company.Name</h5>
                     <small>3 days ago</small>
                 </div>

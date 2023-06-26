@@ -1,36 +1,111 @@
-﻿@model Data.Entities.Jobseeker
+﻿@model Utility.ViewModels.JobseekerDetailsVm
 @using System.Security.Claims
+@inject Utility.Interfaces.Profile.IJobseekerProfileService ProfileService;
 @{
     ViewData["Title"] = "Details";
+    bool userIsOwner = await ProfileService.UserOwnsProfile(User, Model.Jobseeker);
 }
 
 <div class="container">
-    <div class="row justify-content-between">
+    <div class="row mb-3">
         <div class="col-8">
-            <h3 class="display-3">@Model.Name profile</h3>
+            <div class="d-flex gap-3">
+                <div>
+                    <img class="rounded-circle" style="height:250px; width:250px;" src="@ProfileService.GetImageSource(Model.Jobseeker)" />
+                </div>
+                <div class="d-flex flex-column justify-content-center">
+                    <h2 class="display-2">@Model.Jobseeker.Name</h2>
+                    <label><i class="fa-solid fa-envelope"></i> @Model.Jobseeker.AppUser.Email</label>
+                </div>
+            </div>
+
         </div>
-        <div class="col-4 d-flex flex-row justify-content-end align-items-center">
-            @if(User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.AppUserId)
+        <div class="col-4">
+            @if (userIsOwner)
             {
-                <a class="btn btn-outline-primary ms-3" asp-controller="JobOffer" asp-action="Index">
-                    Offers
-                </a>
-                <a class="btn btn-outline-primary ms-3" asp-controller="VacancieRespond" asp-action="Index">
-                    Responds
-                </a>
-                <a class="btn btn-outline-primary ms-3" asp-action="Edit">
-                    Edit your profile
-                </a>
+                <div class="d-flex flex-row justify-content-end">
+                    <a class="btn btn-outline-primary ms-3" asp-controller="ResumeRespond" asp-action="Index">
+                        Responds
+                    </a>
+                    <a class="btn btn-outline-primary ms-3" asp-controller="JobOffer" asp-action="Index">
+                        Offers
+                    </a>
+                    <a class="btn btn-outline-primary ms-3" asp-action="Edit">
+                        Edit your profile
+                    </a>
+                </div>
             }
-        </div>          
-    </div>
-    <div class="row">
-        <div class="col-6">
-            <p>@Model.Name</p>
-            <p>@Html.Raw(Model.About)</p>
         </div>
-        <div class="col-6">
-            <img class="img-fluid" src="@Model.ImagePath"/>
+    </div>
+
+    <div class="row mb-3">
+        <div class="mb-3">
+            <h3 class="display-3">About Jobseeker</h3>
+        </div>
+        <hr />
+        <div mb-3>
+            <p>@Html.Raw(Model.Jobseeker.About)</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div>
+            @if (userIsOwner)
+            {
+                <h3 class="display-3 mb-3">Your Resumes</h3>
+            }
+            else
+            {
+                <h3 class="display-3 mb-3">Jobseeker's Resumes</h3>
+            }
+        </div>
+        <hr />
+        <div class="list-group-flush mt-3">
+            @if (userIsOwner)
+            {
+                <div class="list-group-item mb-3">
+                    <a asp-controller="Resume" asp-action="Create" class="list-group-item btn btn-primary text-center">
+                        <span class="display-5"><i class="fa-solid fa-plus"></i> Create new</span>
+                    </a>
+                </div>
+            }
+
+            @foreach (ResumeIndexVm viewModel in Model.Resumes)
+            {
+                <div class="list-group-item p-0 mb-3">
+                    <div class="card">
+
+                        <div class="card-header">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5>
+                                    <a asp-controller="Resume" asp-action="Details" asp-route-id="@viewModel.Resume.Id" class="link-underline link-underline-opacity-0">@viewModel.Resume.Name</a>
+                                </h5>
+                                <small>@viewModel.PublishedAgo</small>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <p>
+                                @Html.Raw(viewModel.ShortDescription)
+                            </p>
+
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <a asp-controller="Resume" asp-action="Details" asp-route-id="@viewModel.Resume.Id" class="link-underline link-underline-opacity-0">Details</a>
+                                </div>
+                                <div class="d-flex justify-content-end gap-3">
+                                    <label>
+                                        <i class="fa-solid fa-eye"></i> @viewModel.Resume.CountWatched
+                                    </label>
+                                    <label>
+                                        <i class="fa-solid fa-people-line"></i> @viewModel.Resume.OffersCount
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>

@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Utility.Settings;
+using Data.Entities;
+using Utility.Interfaces.EmailSending;
 
 namespace Utility.Services.EmailSending
 {
-    public class EmailSenderService : IEmailSender
+    public class EmailSenderService : IEmailSenderService
     {
         private readonly MailjetSettings _settings;
         private readonly MailjetClient _mailjetClient;
@@ -39,6 +41,12 @@ namespace Utility.Services.EmailSending
                     }});
 
             MailjetResponse response = await _mailjetClient.PostAsync(request);
+        }
+
+        public async Task SendVacancieRespondChangedStatus(VacancieRespond respond)
+        {
+            await SendEmailAsync(respond.Resume.Jobseeker.AppUser.Email, "Your respond was answered",
+                $"You've got an answer on your respond with resume {respond.Resume}. Check it out!");
         }
     }
 }

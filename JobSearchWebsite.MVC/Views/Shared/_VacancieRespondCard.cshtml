@@ -1,0 +1,63 @@
+﻿@model Utility.ViewModels.VacancieRespondDetailsVm
+@using Data.Enums;
+
+
+<div class="d-flex flex-row w-100 justify-content-between">
+    <div class="">
+        <label>Vacancie: </label>
+        <a asp-controller="Vacancie" asp-action="Details" asp-route-Id="@Model.VacancieRespond.Vacancie.Id">@Model.VacancieRespond.Vacancie.Name</a>
+    </div>
+    <div>
+        @{
+            string badgeStyle = Model.VacancieRespond.Status switch
+            {
+                RespondStatus.Accepted => "bg-success",
+                RespondStatus.Rejected => "bg-danger",
+                _ => "bg-primary",
+            };
+        }
+        <span class="badge @badgeStyle">@Model.VacancieRespond.Status.ToString()</span>
+    </div>
+</div>
+
+<div class="d-flex flex-row w-100 justify-content-between">
+    <div class="">
+        <label>Resume: </label>
+        <a asp-controller="Resume" asp-action="Details" asp-route-Id="@Model.VacancieRespond.Resume.Id">@Model.VacancieRespond.Resume.Name</a>
+    </div>
+</div>
+
+<div class="d-flex flex-row w-100 justify-content-between align-items-end">
+    <div class="d-flex flex-column justify-content-end">
+        <small>@Model.SentAgo</small>
+        @if (Model.VacancieRespond.Status != RespondStatus.Pending)
+        {
+            <small>@Model.AnsweredAgo</small>
+        }
+    </div>
+    <div class="d-flex flex-row justify-content-end">
+        @if (User.IsCompany() && Model.VacancieRespond.Status == RespondStatus.Pending)
+        {
+            <form method="post" asp-action="ChangeStatus">
+                <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
+                <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
+                <input hidden asp-for="@Model.VacancieRespond.Status" value="@RespondStatus.Accepted" />
+                <button type="submit" class="btn btn-outline-success ms-3">Accept</button>
+            </form>
+            <form method="post" asp-action="ChangeStatus">
+                <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
+                <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
+                <input hidden asp-for="@Model.VacancieRespond.Status" value="@RespondStatus.Rejected" />
+                <button type="submit" class="btn btn-outline-danger ms-3">Reject</button>
+            </form>
+        }
+        else if (User.IsJobseeker())
+        {
+            <form method="post" asp-action="Delete">
+                <input hidden asp-for="@Model.VacancieRespond.VacancieId" />
+                <input hidden asp-for="@Model.VacancieRespond.ResumeId" />
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
+            </form>
+        }
+    </div>
+</div>

@@ -19,5 +19,10 @@ namespace Utility.Services.Profile
             await _dbContext.SaveChangesAsync();
             return profile;
         }
+
+        public string GetImageSource(Jobseeker profile)
+        {
+            return base.GetImageSource(profile, @"https://img.freepik.com/free-icon/user_318-159711.jpg");
+        }
     }
 }

@@ -44,6 +44,7 @@ namespace JobSearchWebsite.MVC.Controllers
         public override async Task<IActionResult> Details(int id)
         {
             var company = await _dbContext.Companies.AsNoTracking()
+                .Include(c => c.AppUser)
                 .Include(c => c.Vacancies)
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (company == null)

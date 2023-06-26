@@ -53,7 +53,8 @@ namespace JobSearchWebsite.MVC.Controllers
 		public async Task<IActionResult> Index(int? id, VacancieIndexListVm fromRequest)
 		{
             IQueryable<Vacancie> vacancies = _dbContext.Vacancies.Where(v => v.IsPublished)
-				.Include(v => v.Company);
+				.Include(v => v.Company)
+					.ThenInclude(c => c.AppUser);
 
             if (fromRequest.Filter != null)
             {
@@ -98,7 +99,7 @@ namespace JobSearchWebsite.MVC.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Details(int id)
 		{
-			Vacancie vacancie = await _vacancieService.EagerLoadAsNoTracking(id);
+			Vacancie vacancie = await _vacancieService.EagerLoad(id);
 			if (vacancie == null)
 			{
 				return NotFound();
