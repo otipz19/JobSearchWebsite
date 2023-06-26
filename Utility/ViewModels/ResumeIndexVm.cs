@@ -8,6 +8,6 @@ namespace Utility.ViewModels
 
         public string ShortDescription { get; set; }
 
-        public string CreatedAgo { get; set; }
+        public string PublishedAgo { get; set; }
     }
 }

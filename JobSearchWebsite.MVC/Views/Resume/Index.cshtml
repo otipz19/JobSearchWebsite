@@ -132,17 +132,49 @@
                 </div>
             </div>
 
-            <div class="list-group">
+            <div class="list-group-flush mb-3">
                 @foreach (ResumeIndexVm viewModel in Model.Items)
                 {
-                    <a asp-action="Details" asp-route-id="@viewModel.Resume.Id" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">@viewModel.Resume.Name</h5>
-                            <small>@viewModel.CreatedAgo</small>
+                    <div class="list-group-item p-0 mb-3">
+                        <div class="card">
+
+                            <div class="card-header">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5>
+                                        <a asp-action="Details" asp-route-id="@viewModel.Resume.Id" class="link-underline link-underline-opacity-0">@viewModel.Resume.Name</a>
+                                    </h5>
+                                    <small>@viewModel.PublishedAgo</small>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <p>
+                                    @viewModel.ShortDescription
+                                </p>
+
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <a asp-action="Details" asp-route-id="@viewModel.Resume.Id" class="link-underline link-underline-opacity-0">Details</a>
+                                    </div>
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <label>
+                                            <i class="fa-solid fa-eye"></i> @viewModel.Resume.CountWatched
+                                        </label>
+                                        <label>
+                                            <i class="fa-solid fa-people-line"></i> @viewModel.Resume.OffersCount
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-start gap-3 align-items-top">
+                                    <img class="rounded-circle" style="width:50px; height: 50px;" src="@viewModel.Resume.Jobseeker.ImagePath">
+                                    <a asp-controller="Company" asp-action="Details" asp-route-Id="@viewModel.Resume.JobseekerId" class="link-underline link-underline-opacity-0">@viewModel.Resume.Jobseeker.Name</a>
+                                </div>
+                            </div>
                         </div>
-                        <p class="mb-1">@viewModel.ShortDescription</p>
-                        <small class="text-muted">And some small print.</small>
-                    </a>
+                    </div>
                 }
             </div>
 

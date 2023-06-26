@@ -134,23 +134,48 @@
                 </div>
             </div>
 
-            <div class="list-group mb-3">
+            <div class="list-group-flush mb-3">
                 @foreach (VacancieIndexVm viewModel in Model.Items)
                 {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">
-                                <a asp-action="Details" asp-route-id="@viewModel.Vacancie.Id" class="link-underline link-underline-opacity-0">@viewModel.Vacancie.Name</a>
-                            </h5>
-                            <small>@viewModel.PublishedAgo</small>
+                    <div class="list-group-item p-0 mb-3">
+                        <div class="card">
+
+                            <div class="card-header">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5>
+                                        <a asp-action="Details" asp-route-id="@viewModel.Vacancie.Id" class="link-underline link-underline-opacity-0">@viewModel.Vacancie.Name</a>
+                                    </h5>
+                                    <small>@viewModel.PublishedAgo</small>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <p>
+                                    @viewModel.ShortDescription
+                                </p>
+
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <a asp-action="Details" asp-route-id="@viewModel.Vacancie.Id" class="link-underline link-underline-opacity-0">Details</a>
+                                    </div>
+                                    <div class="d-flex justify-content-end gap-3">
+                                        <label>
+                                            <i class="fa-solid fa-eye"></i> @viewModel.Vacancie.CountWatched
+                                        </label>
+                                        <label>
+                                            <i class="fa-solid fa-people-line"></i> @viewModel.Vacancie.RespondsCount
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                       
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-start gap-3 align-items-top">
+                                    <img class="rounded-circle" style="width:50px; height: 50px;" src="@viewModel.Vacancie.Company.ImagePath">
+                                    <a asp-controller="Company" asp-action="Details" asp-route-Id="@viewModel.Vacancie.CompanyId" class="link-underline link-underline-opacity-0">@viewModel.Vacancie.Company.Name</a>
+                                </div>
+                            </div>
                         </div>
-                        <p class="mb-1">
-                            @viewModel.ShortDescription
-                        </p>
-                        <div>
-                            <a asp-action="Details" asp-route-id="@viewModel.Vacancie.Id" class="link-underline link-underline-opacity-0">Details</a>
-                        </div>
-                        <small class="text-muted">And some small print.</small>
                     </div>
                 }
             </div>
